@@ -1,5 +1,5 @@
 <?php
-require('helpers.php');
+require_once('helpers.php');
 $is_auth = rand(0, 1);
 $user_name = 'Anastasya'; // укажите здесь ваше имя
 
@@ -45,23 +45,24 @@ $products = [
     ],
 ];
 
-function format_price($raw_price) {
-    if (is_int($raw_price) || is_float($raw_price)) {
-        $actual_price = ceil(intval($raw_price));
+function formatPrice($rawPrice) {
+    if (is_int($rawPrice) || is_float($rawPrice)) {
+        $actualPrice = ceil(intval($rawPrice));
 
-        if ($actual_price >= 1000) {
-            $actual_price = number_format($actual_price, 0, '', ' ' );
+        if ($actualPrice >= 1000) {
+            $actualPrice = number_format($actualPrice, 0, '', ' ' );
         }
-        return $actual_price.' &#8381;';
+        return $actualPrice.' &#8381;';
     }
 }
 
-// HTML-код главной страницы
+// HTML-код блока main
 $page_content = include_template('/main.php', [
     'categories' => $categories,
     'products' => $products
 ]);
 
+// HTML-код блока footer
 $footer_content = include_template('/footer.php', ['categories' => $categories]);
 
 // окончательный HTML-код
