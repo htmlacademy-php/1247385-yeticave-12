@@ -42,13 +42,15 @@ $products = [
     ],
 ];
 
-function format_price(int $raw_price) {
-    $actual_price = ceil($raw_price);
+function format_price($raw_price) {
+    if (is_int($raw_price)) {
+        $actual_price = ceil($raw_price);
 
-    if ($actual_price >= 1000) {
-        $actual_price = number_format($actual_price, 0, '', ' ' );
+        if ($actual_price >= 1000) {
+            $actual_price = number_format($actual_price, 0, '', ' ' );
+        }
+        return $actual_price.' &#8381;';
     }
-    return $actual_price.' &#8381;';
 }
 ?>
 <!DOCTYPE html>
