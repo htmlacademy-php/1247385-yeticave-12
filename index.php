@@ -43,8 +43,8 @@ $products = [
 ];
 
 function format_price($raw_price) {
-    if (is_int($raw_price)) {
-        $actual_price = ceil($raw_price);
+    if (is_int($raw_price) || is_float($raw_price)) {
+        $actual_price = ceil(intval($raw_price));
 
         if ($actual_price >= 1000) {
             $actual_price = number_format($actual_price, 0, '', ' ' );
