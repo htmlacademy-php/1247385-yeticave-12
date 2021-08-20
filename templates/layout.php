@@ -8,7 +8,6 @@
 </head>
 <body>
 <div class="page-wrapper">
-
 <header class="main-header">
     <div class="main-header__container container">
         <h1 class="visually-hidden">YetiCave</h1>
@@ -22,7 +21,7 @@
         <a class="main-header__add-lot button" href="pages/add-lot.html">Добавить лот</a>
 
         <nav class="user-menu">
-        <!-- здесь должен быть PHP код для показа меню и данных пользователя -->
+        <!-- код для показа меню и данных пользователя -->
             <?php if ($is_auth === 1): ?>
                 <div class="user-menu__logged">
                     <p><?= $user_name?></p>
