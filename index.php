@@ -12,7 +12,7 @@ $products = [
         'category' => 'Доски и лыжи',
         'price' => 10999,
         'url' => 'img/lot-1.jpg',
-        'expiration' => '2021-08-20 21:57'
+        'expiration' => '2021-08-22 12:50'
     ],
     [
         'title' => 'DC Ply Mens 2016/2017 Snowboard',
@@ -74,10 +74,25 @@ function getExpirationDate($date) {
     return [$hours, $minutes];
 }
 
+function createDetailProducts($array) {
+    $detailProducts = [];
+
+    foreach ($array as $item) {
+        $hoursMinutes = getExpirationDate($item['expiration']);
+
+        $item['hours'] = $hoursMinutes[0];
+        $item['minutes'] = $hoursMinutes[1];
+        $item['isNew'] = $hoursMinutes[0] < 1;
+
+        $detailProducts[] = $item;
+    }
+    return $detailProducts;
+}
+
 // HTML-код блока main
 $page_content = include_template('/main.php', [
     'categories' => $categories,
-    'products' => $products
+    'products' => createDetailProducts($products)
 ]);
 
 // HTML-код блока footer

@@ -30,8 +30,8 @@
                             <span class="lot__amount">Стартовая цена</span>
                             <span class="lot__cost"><?= formatPrice($product['price']) ?></span>
                         </div>
-                        <div class="lot__timer timer <?= getExpirationDate($product['expiration'])[0] < 1 ? 'timer--finishing' : '' ?>">
-                            <?= getExpirationDate($product['expiration'])[0] . ':' . getExpirationDate($product['expiration'])[1] ?>
+                        <div class="lot__timer timer <?= $product['isNew'] ? 'timer--finishing' : '' ?>">
+                            <?= $product['hours'] . ':' . $product['minutes'] ?>
                         </div>
                     </div>
                 </div>
