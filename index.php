@@ -74,17 +74,17 @@ function getExpirationDate($date) {
     return [$hours, $minutes];
 }
 
-function createDetailProducts($array) {
+function createDetailProducts(array $products) {
     $detailProducts = [];
 
-    foreach ($array as $item) {
-        $hoursMinutes = getExpirationDate($item['expiration']);
+    foreach ($products as $product) {
+        $hoursMinutes = getExpirationDate($product['expiration']);
 
-        $item['hours'] = $hoursMinutes[0];
-        $item['minutes'] = $hoursMinutes[1];
-        $item['isNew'] = $hoursMinutes[0] < 1;
+        $product['hours'] = $hoursMinutes[0];
+        $product['minutes'] = $hoursMinutes[1];
+        $product['isNew'] = $hoursMinutes[0] < 1;
 
-        $detailProducts[] = $item;
+        $detailProducts[] = $product;
     }
     return $detailProducts;
 }

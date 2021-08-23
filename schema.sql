@@ -10,7 +10,7 @@ CREATE TABLE category (
   code CHAR(20) NOT NULL UNIQUE
 );
 
-CREATE INDEX code_c ON category(code);
+CREATE INDEX idx_code ON category(code);
 
 CREATE TABLE lot (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,10 +26,10 @@ CREATE TABLE lot (
   category_id INT NOT NULL
 );
 
-CREATE INDEX date_created ON lot(date_created);
-CREATE INDEX title ON lot(title);
-CREATE INDEX date_exp ON lot(date_exp);
-CREATE INDEX start_price ON lot(start_price);
+CREATE INDEX idx_date_created ON lot(date_created);
+CREATE INDEX idx_title ON lot(title);
+CREATE INDEX idx_date_exp ON lot(date_exp);
+CREATE INDEX idx_start_price ON lot(start_price);
 
 CREATE TABLE bet (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,7 +39,7 @@ CREATE TABLE bet (
   lot_id INT NOT NULL
 );
 
-CREATE INDEX date_released ON bet(date_released);
+CREATE INDEX idx_date_released ON bet(date_released);
 
 CREATE TABLE user (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -52,6 +52,6 @@ CREATE TABLE user (
   bet_id INT
 );
 
-CREATE INDEX date_created ON user(date_created);
-CREATE INDEX email_u ON user(email);
-CREATE INDEX name ON user(name);
+CREATE INDEX idx_date_created ON user(date_created);
+CREATE INDEX idx_email ON user(email);
+CREATE INDEX idx_name ON user(name);
