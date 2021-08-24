@@ -30,12 +30,12 @@ VALUES (TIMESTAMPADD(MINUTE, 15, CURRENT_TIMESTAMP), 11000, 1, 1),
 SELECT * FROM categories
 
 /* Получаем самые новые, открытые лоты. Каждый лот включает название, стартовую цену, ссылку на изображение, цену, название категории */
-SELECT lots.title, start_price, image, price, categories.title as category
+SELECT lots.title, start_price, image, price, date_created, categories.title as category
 FROM lots
        JOIN bets ON lot_id = lots.id
        JOIN categories ON categories.id = category_id
 WHERE date_exp > NOW()
-ORDER BY price DESC;
+ORDER BY date_created;
 
 /* Получаем лот по его ID. Получаем также название категории, к которой принадлежит лот (для более удобного представления добавлено имя пользователя) */
 SELECT lots.id, lots.title, start_price, image, date_exp, categories.title as category, users.name

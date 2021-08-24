@@ -78,11 +78,11 @@ function createDetailProducts(array $products) {
     $detailProducts = [];
 
     foreach ($products as $product) {
-        $hoursMinutes = getExpirationDate($product['expiration']);
+        list($hours, $minutes) = getExpirationDate($product['expiration']);
 
-        $product['hours'] = $hoursMinutes[0];
-        $product['minutes'] = $hoursMinutes[1];
-        $product['isNew'] = $hoursMinutes[0] < 1;
+        $product['hours'] = $hours;
+        $product['minutes'] = $minutes;
+        $product['isNew'] = $hours;
 
         $detailProducts[] = $product;
     }
