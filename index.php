@@ -82,7 +82,7 @@ function createDetailProducts(array $products) {
 
         $product['hours'] = $hours;
         $product['minutes'] = $minutes;
-        $product['isNew'] = $hours;
+        $product['isNew'] = $hours < 1;
 
         $detailProducts[] = $product;
     }
