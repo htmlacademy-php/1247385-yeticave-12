@@ -1,11 +1,27 @@
 <?php
-require_once('helpers.php');
+require_once 'helpers.php';
+$connection = mysqli_connect("localhost", "root", "root", "yeticave");
+mysqli_set_charset($connection, "utf8");
+
+if ($connection) {
+    $sql = 'SELECT `code`, `title` FROM categories';
+    $result = mysqli_query($connection, $sql);
+
+    if ($result) {
+        $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    } else {
+        $error = mysqli_error($connection);
+        print("Ошибка MySQL: " . $error);
+    }
+} else {
+    print('Ошибка подключения: ' . mysqli_connect_error());
+}
+
 $is_auth = rand(0, 1);
 $user_name = 'Anastasya'; // укажите здесь ваше имя
 
 $title = 'YetiCave - Главная';
 
-$categories = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
 $products = [
     [
         'title' => '2014 Rossignol District Snowboard',
