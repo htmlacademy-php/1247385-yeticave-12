@@ -1,66 +1,49 @@
 <?php
-require_once('helpers.php');
+require_once 'helpers.php';
+
 $is_auth = rand(0, 1);
 $user_name = 'Anastasya'; // укажите здесь ваше имя
-
 $title = 'YetiCave - Главная';
 
-$categories = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
-$products = [
-    [
-        'title' => '2014 Rossignol District Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => 10999,
-        'url' => 'img/lot-1.jpg',
-        'expiration' => '2021-08-22 22:51'
-    ],
-    [
-        'title' => 'DC Ply Mens 2016/2017 Snowboard',
-        'category' => 'Доски и лыжи',
-        'price' => 159999,
-        'url' => 'img/lot-2.jpg',
-        'expiration' => '2021-08-22'
-    ],
-    [
-        'title' => 'Крепления Union Contact Pro 2015 года размер L/XL',
-        'category' => 'Крепления',
-        'price' => 8000,
-        'url' => 'img/lot-3.jpg',
-        'expiration' => '2021-08-23'
-    ],
-    [
-        'title' => 'Ботинки для сноуборда DC Mutiny Charocal',
-        'category' => 'Ботинки',
-        'price' => 10999,
-        'url' => 'img/lot-4.jpg',
-        'expiration' => '2021-08-24'
-    ],
-    [
-        'title' => 'Куртка для сноуборда DC Mutiny Charocal',
-        'category' => 'Одежда',
-        'price' => 7500,
-        'url' => 'img/lot-5.jpg',
-        'expiration' => '2021-08-25'
-    ],
-    [
-        'title' => 'Маска Oakley Canopy',
-        'category' => 'Разное',
-        'price' => 5400,
-        'url' => 'img/lot-6.jpg',
-        'expiration' => '2021-08-26'
-    ],
-];
+$connection = mysqli_connect("localhost", "root", "root", "yeticave");
+mysqli_set_charset($connection, "utf8");
+
+$sqlCategories = 'SELECT `code`, `title` FROM categories';
+$sqlProducts = 'SELECT lots.title as title, `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '
+    . 'JOIN `categories` ON categories.id = `category_id` '
+    . 'WHERE `date_exp` > NOW() '
+    . 'ORDER BY `date_created`';
+
+function getDataFromDB($connection, $sql) {
+    if ($connection) {
+        $result = mysqli_query($connection, $sql);
+
+        if ($result) {
+            $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        } else {
+            $error = mysqli_error($connection);
+            $data = [];
+            print("Ошибка MySQL: " . $error);
+        }
+    } else {
+        print('Ошибка подключения: ' . mysqli_connect_error());
+    }
+    return $data;
+}
+
+$categories = getDataFromDB($connection, $sqlCategories);
+$products = getDataFromDB($connection, $sqlProducts);
+
 
 function formatPrice($rawPrice) {
-    if (is_int($rawPrice) || is_float($rawPrice)) {
-        $actualPrice = ceil(intval($rawPrice));
+    $actualPrice = ceil(intval($rawPrice));
 
-        if ($actualPrice >= 1000) {
-            $actualPrice = number_format($actualPrice, 0, '', ' ' );
-        }
-        return $actualPrice.' &#8381;';
+    if ($actualPrice >= 1000) {
+        $actualPrice = number_format($actualPrice, 0, '', ' ');
     }
+    return $actualPrice . ' &#8381;';
 }
+
 
 function getExpirationDate($date) {
     $currentDate = strtotime('now');
