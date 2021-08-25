@@ -6,7 +6,7 @@
         <!--список из массива категорий-->
         <?php foreach ($categories as $category): ?>
             <li class="promo__item promo__item--<?= $category['code'] ?>">
-                <a class="promo__link" href="pages/all-lots.html"><?= $category['title'] ?></a>
+                <a class="promo__link" href="pages/all-lots.html"><?= strip_tags($category['title']); ?></a>
             </li>
         <?php endforeach; ?>
     </ul>
