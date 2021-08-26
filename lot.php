@@ -3,60 +3,50 @@ require_once 'helpers.php';
 require_once 'functions.php';
 require_once 'db.php';
 
-$title = 'YetiCave - Lot Page';
 
-$sqlSelectLot = 'SELECT lots.id as id, `start_price` as price, `image` as url, `date_exp` as expiration,
-       categories.title as category FROM lots '
-    . 'JOIN `categories` ON categories.id = `category_id` '
-    . 'WHERE lots.id' . $id;
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
 
-
-function getLotFromDB($connection, $sql) {
     if ($connection) {
-        $result = mysqli_query($connection, $sql);
+        $sqlSelectLot = 'SELECT lots.id as id, lots.title as title, lots.description as description,
+       `start_price` as price, `image` as url, `date_exp` as expiration, categories.title as category FROM lots '
+            . 'JOIN `categories` ON categories.id = `category_id` '
+            . 'WHERE lots.id=' . $id;
 
-        if ($result) {
-            $row = mysqli_fetch_assoc($result);
+        $result = mysqli_query($connection, $sqlSelectLot);
+
+        if ($result && mysqli_num_rows($result) !== 0) {
+            // $row = mysqli_fetch_assoc($result);
+            // буду лучше брать массив из одного элемента, чтобы использовать готовую функцию createDetailProducts
+            $lot = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $content = include_template('/lot.php', [
+                'categories' => $categories,
+                // берем первый и единственный элемент массива
+                'lot' => createDetailProducts($lot)[0]
+            ]);
         } else {
-            $error = mysqli_error($connection);
             http_response_code(404);
-            print("Ошибка MySQL: " . $error);
+            $error = mysqli_error($connection);
+            $content = include_template('/404.php', ['categories' => $categories]);
         }
     } else {
         print('Ошибка подключения: ' . mysqli_connect_error());
     }
-    var_dump($row);
-    return $row;
-}
-
-$id = intval($_GET['id']);
-
-$location = pathinfo(__FILE__, PATHINFO_BASENAME);
-$params = http_build_query($id);
-$url = '/' . $location . '?' . $params;
-var_dump($url);
-
-if (isset($id)) {
-    getLotFromDB($connection, $sqlSelectLot);
 } else {
     http_response_code(404);
+    $content = include_template('/404.php', ['categories' => $categories]);
 }
 
-
-// HTML-код блока main
-$page_content = include_template('/lot.php', [
-    'categories' => $categories
-]);
 
 // HTML-код блока footer
 $footer_content = include_template('/footer.php', ['categories' => $categories]);
 
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
-    'title' => $title,
+    'title' => $lot[0]['title'],
     'is_auth' => $is_auth,
     'user_name' => $user_name,
-    'content' => $page_content,
+    'content' => $content,
     'footer' => $footer_content,
 ]);
 
