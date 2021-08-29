@@ -29,8 +29,8 @@ $footer_content = include_template('/footer.php', ['categories' => $categories])
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
     'title' => $title,
-    'is_auth' => $is_auth,
-    'user_name' => $user_name,
+    'isAuth' => $isAuth,
+    'userName' => $userName,
     'content' => $page_content,
     'footer' => $footer_content,
     'scripts' => includeScripts($scripts),

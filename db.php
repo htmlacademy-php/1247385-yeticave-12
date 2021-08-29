@@ -1,6 +1,6 @@
 <?php
-$is_auth = rand(0, 1);
-$user_name = 'Anastasya'; // укажите здесь ваше имя
+$isAuth = rand(0, 1);
+$userName = 'Anastasya'; // укажите здесь ваше имя
 
 $connection = mysqli_connect("localhost", "root", "root", "yeticave");
 mysqli_set_charset($connection, "utf8");
