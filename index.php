@@ -1,14 +1,8 @@
 <?php
 require_once 'helpers.php';
-require_once 'functions.php';
 require_once 'db.php';
 
 $title = 'YetiCave - Главная';
-
-$scripts = [
-    'flatpickr.js',
-    'script.js'
-];
 
 $sqlProducts = 'SELECT lots.id as id, lots.title as title, `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '
     . 'JOIN `categories` ON categories.id = `category_id` '

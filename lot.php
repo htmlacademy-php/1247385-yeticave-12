@@ -1,6 +1,5 @@
 <?php
 require_once 'helpers.php';
-require_once 'functions.php';
 require_once 'db.php';
 
 // подготавливаем параметр для запроса в БД

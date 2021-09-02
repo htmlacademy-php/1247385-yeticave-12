@@ -20,7 +20,7 @@ CREATE TABLE lots (
   image CHAR(120) NOT NULL,
   start_price DECIMAL NOT NULL,
   date_exp TIMESTAMP NOT NULL,
-  step_price DECIMAL,
+  step_price INT,
   author_id INT NOT NULL,
   winner_id INT,
   category_id INT NOT NULL

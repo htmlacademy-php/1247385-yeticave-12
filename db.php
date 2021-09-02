@@ -2,6 +2,13 @@
 $isAuth = rand(0, 1);
 $userName = 'Anastasya'; // укажите здесь ваше имя
 
+$scripts = [
+    'flatpickr.js',
+    'script.js'
+];
+
+$extraCss = '<link href="../css/flatpickr.min.css" rel="stylesheet">';
+
 $connection = mysqli_connect("localhost", "root", "root", "yeticave");
 mysqli_set_charset($connection, "utf8");
 
@@ -22,6 +29,5 @@ function getDataFromDB($connection, $sql) {
     return $data;
 }
 
-$sqlCategories = 'SELECT `code`, `title` FROM categories';
+$sqlCategories = 'SELECT categories.id as id, `code`, `title` FROM categories';
 $categories = getDataFromDB($connection, $sqlCategories);
-

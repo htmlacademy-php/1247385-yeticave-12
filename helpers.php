@@ -143,4 +143,137 @@ function include_template($name, array $data = []) {
     return $result;
 }
 
+function includeScripts(array $scripts) {
+    $scriptTags = '';
+    $scriptPath = '../';
+    foreach ($scripts as $script) {
+        $scriptTags .= "<script src='$scriptPath$script'></script>\n";
+    }
+    return $scriptTags;
+}
 
+function formatPrice(int $rawPrice) {
+    $actualPrice = ceil($rawPrice);
+
+    if ($actualPrice >= 1000) {
+        $actualPrice = number_format($actualPrice, 0, '', ' ');
+    }
+    return $actualPrice . ' &#8381;';
+}
+
+function getExpirationDate($date) {
+    $currentDate = strtotime('now');
+    $expiryDate = strtotime($date);
+
+    $diff = $expiryDate - $currentDate;
+
+    $hours = str_pad(floor($diff / 3600), 2, '0', STR_PAD_LEFT);
+    $minutes = str_pad(floor(($diff % 3600) / 60), 2, "0", STR_PAD_LEFT);
+
+    return [$hours, $minutes];
+}
+
+function createDetailProducts(array $products) {
+    $detailProducts = [];
+
+    foreach ($products as $product) {
+        list($hours, $minutes) = getExpirationDate($product['expiration']);
+
+        $product['hours'] = $hours;
+        $product['minutes'] = $minutes;
+        $product['isNew'] = $hours < 1;
+
+        $detailProducts[] = $product;
+    }
+    return $detailProducts;
+}
+
+function getPostVal($name) {
+    return filter_input(INPUT_POST, $name);
+}
+
+function validateCategory($id, $categoriesIds) {
+    if (!in_array($id, $categoriesIds)) {
+        return 'Выберите категорию из списка';
+    }
+
+    return null;
+}
+
+function validateLength($value, $min, $max) {
+    if ($value) {
+        $len = strlen($value);
+        if ($len < $min || $len > $max) {
+            return "Значение должно быть длиной от $min до $max символов";
+        }
+    }
+
+    return null;
+}
+
+function validatePrice($value) {
+    $step = filter_var($value, FILTER_VALIDATE_FLOAT);
+
+    if(!$step || $step <=0) {
+        return "Начальная цена должна быть числом больше ноля";
+    }
+
+    return null;
+}
+
+function validatePriceStep($value) {
+    $options = ['options' => ['min_range' => 1]];
+    $step = filter_var($value, FILTER_VALIDATE_INT, $options);
+
+    if(!$step) {
+        return "Шаг ставки должен быть целым числом больше ноля";
+    }
+
+    return null;
+}
+
+function validateDate($date) {
+    $currentDate = strtotime('now');
+    $expiryDate = strtotime($date);
+
+    $diff = ($expiryDate - $currentDate) / 86400;
+
+    if(!is_date_valid($date)) {
+        return "Введите корректную дату в формате ГГГГ-ММ-ДД";
+    }
+
+    if($diff < 1) {
+        return "Дата окончания торгов должна быть больше текущей даты, хотя бы на один день";
+    }
+
+    return null;
+}
+
+function validateImg() {
+    if (!empty($_FILES['lot-img']['name'])) {
+        $mimeTypes = ['image/png', 'image/jpeg'];
+
+        $tmpName = $_FILES['lot-img']['tmp_name'];
+
+        $fileType = mime_content_type($tmpName);
+    
+        if (!in_array($fileType, $mimeTypes)) {
+            return 'Допустимый формат для изображений - jpg, jpeg, png';
+        }
+    } else {
+        return 'Загрузите изображение';
+    }
+
+    return null;
+}
+
+function getImageUrl() {
+    $fileName = $_FILES['lot-img']['name'];
+    $tmpName = $_FILES['lot-img']['tmp_name'];
+    $filePath = __DIR__ . '/uploads/';
+    $fileUrl = '/uploads/' . $fileName;
+
+    move_uploaded_file($tmpName, $filePath . $fileName);
+
+    return $fileUrl;
+}
