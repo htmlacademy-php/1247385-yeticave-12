@@ -1,14 +1,8 @@
 <?php
 require_once 'helpers.php';
-require_once 'functions.php';
 require_once 'db.php';
 
 $title = 'YetiCave - Главная';
-
-$scripts = [
-    'flatpickr.js',
-    'script.js'
-];
 
 $sqlProducts = 'SELECT lots.id as id, lots.title as title, `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '
     . 'JOIN `categories` ON categories.id = `category_id` '
@@ -29,8 +23,8 @@ $footer_content = include_template('/footer.php', ['categories' => $categories])
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
     'title' => $title,
-    'is_auth' => $is_auth,
-    'user_name' => $user_name,
+    'isAuth' => $isAuth,
+    'userName' => $userName,
     'content' => $page_content,
     'footer' => $footer_content,
     'scripts' => includeScripts($scripts),
