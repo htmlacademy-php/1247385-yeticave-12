@@ -211,6 +211,30 @@ function validateLength($value, $min, $max) {
     return null;
 }
 
+function checkEmailExists($value, $connection) {
+    $email = mysqli_real_escape_string($connection, $value);
+    $sql = "SELECT `id` FROM users WHERE email= '$email'";
+    $result = mysqli_query($connection, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        return "Пользователь с этим email уже зарегистрирован";
+    }
+
+    return null;
+}
+
+function validateEmail($value, $connection) {
+    $email = filter_var($value, FILTER_VALIDATE_EMAIL);
+
+    if($email) {
+        return checkEmailExists($email, $connection);
+    } else {
+        return "Введите корректный email";
+    }
+
+    return null;
+}
+
 function validatePrice($value) {
     $step = filter_var($value, FILTER_VALIDATE_FLOAT);
 
