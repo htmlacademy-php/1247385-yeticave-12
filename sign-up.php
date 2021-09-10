@@ -2,6 +2,10 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
+$templateData=[
+    'categories' => $categories
+];
+
 function validateInputFields($connection) {
     $required = ['email', 'password', 'name', 'message'];
     $errors = [];
@@ -68,19 +72,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = validateInputFields($connection);
 
     if (!empty($errors)) {
-        $page_content = include_template('/sign-up.php', [
-            'errors' => $errors,
-            'categories' => $categories
-        ]);
+        $templateData['errors'] = $errors;
     } else {
         $user = $_POST;
         insertUserToDB($connection, $user);
     }
 } else {
-    $page_content = include_template('/sign-up.php', [
-        'categories' => $categories
-    ]);
+    $templateData = $templateData;
 }
+
+// HTML-код формы регистрации
+$page_content = include_template('/sign-up.php', $templateData);
 
 // HTML-код блока footer
 $footer_content = include_template('/footer.php', ['categories' => $categories]);
