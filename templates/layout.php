@@ -12,7 +12,7 @@
     <header class="main-header">
         <div class="main-header__container container">
             <h1 class="visually-hidden">YetiCave</h1>
-            <a class="main-header__logo" <?= $homeLink ? "" : "href=/"?>>
+            <a class="main-header__logo" <?= $homePage ? "" : "href=/"?>>
                 <img src="../img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="https://echo.htmlacademy.ru" autocomplete="off">
@@ -35,7 +35,7 @@
                             <a href="/sign-up.php">Регистрация</a>
                         </li>
                         <li class="user-menu__item">
-                            <a href="#">Вход</a>
+                            <a href="/login.php">Вход</a>
                         </li>
                     </ul>
                 <?php endif; ?>
@@ -45,11 +45,15 @@
     </header>
 
     <main <?= $addContainer ? 'class=container' : ''; ?>>
+        <?= $homePage ? false : $navigation; ?>
         <?= $content; ?>
     </main>
 </div>
 
-<footer class="main-footer"><?= $footer; ?></footer>
+<footer class="main-footer">
+    <?= $navigation; ?>
+    <?= $footer; ?>
+</footer>
 
 <?= $scripts; ?>
 

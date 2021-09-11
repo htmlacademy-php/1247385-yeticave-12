@@ -74,11 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         insertUserToDB($connection, $user);
     }
 } else {
-    $templateData = [];
+    $templateData=[];
 }
 
 // HTML-код формы регистрации
-$page_content = include_template('/sign-up.php', $templateData);
+$page_content = include_template('/login.php', $templateData);
 
 // HTML-код блока nav в верхней и нижней части сайта
 $navigation = include_template('/navigation.php', ['categories' => $categories]);
@@ -88,7 +88,7 @@ $footer_content = include_template('/footer.php');
 
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
-    'title' => 'Регистрация',
+    'title' => 'Вход',
     'isAuth' => $isAuth,
     'userName' => $userName,
     'navigation' => $navigation,

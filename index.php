@@ -17,18 +17,22 @@ $page_content = include_template('/main.php', [
     'products' => createDetailProducts($products)
 ]);
 
+// HTML-код блока nav в верхней и нижней части сайта
+$navigation = include_template('/navigation.php', ['categories' => $categories]);
+
 // HTML-код блока footer
-$footer_content = include_template('/footer.php', ['categories' => $categories]);
+$footer_content = include_template('/footer.php');
 
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
     'title' => $title,
     'isAuth' => $isAuth,
     'userName' => $userName,
+    'navigation' => $navigation,
     'content' => $page_content,
     'footer' => $footer_content,
     'scripts' => includeScripts($scripts),
-    'homeLink' => true,
+    'homePage' => true,
     'addContainer' => true
 ]);
 
