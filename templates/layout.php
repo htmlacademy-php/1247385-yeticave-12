@@ -23,11 +23,11 @@
 
             <nav class="user-menu">
             <!-- код для показа меню и данных пользователя -->
-                <?php if ($isAuth === 1): ?>
+                <?php if ($_SESSION): ?>
                     <div class="user-menu__logged">
-                        <p><?= $userName; ?></p>
+                        <p><?= $_SESSION['user']['name']; ?></p>
                         <a class="user-menu__bets" href="pages/my-bets.html">Мои ставки</a>
-                        <a class="user-menu__logout" href="#">Выход</a>
+                        <a class="user-menu__logout" href="/logout.php">Выход</a>
                     </div>
                 <?php else: ?>
                     <ul class="user-menu__list">

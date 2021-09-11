@@ -56,7 +56,7 @@ function insertUserToDB($connection, $user) {
     $result = mysqli_stmt_execute($stmt);
 
     if ($result) {
-        header('Location: /pages/login.html');
+        header('Location: /login.php');
         exit();
     } else {
         $error = mysqli_error($connection);

@@ -2,33 +2,21 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-function validateInputFields($connection) {
-    $required = ['email', 'password', 'name', 'message'];
+$templateData=[];
+
+function validateInputFields() {
+    $required = ['email', 'password'];
     $errors = [];
 
-    $rules = [
-        'email' => function($value) use ($connection) {
-            return validateEmail($value, $connection);
-        },
-        'password' => function($value) {
-            return validateLength($value, 5, 32);
-        },
-        'name' => function($value) {
-            return validateLength($value, 4, 128);
-        },
-        'message' => function($value) {
-            return validateLength($value, 10, 255);
-        }
-    ];
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
 
-    foreach ($_POST as $key => $value) {
-        if (isset($rules[$key])) {
-            $rule = $rules[$key];
-            $errors[$key] = $rule($value);
-        }
+    if (!$email) {
+        $errors['email'] = "Введите корректный email";
+    }
 
-        if (in_array($key, $required) && empty($value)) {
-            $errors[$key] = "Поле $key не может быть пустым";
+    foreach ($required as $field) {
+        if (empty($_POST[$field])) {
+            $errors[$field] = "Поле $field не может быть пустым";
         }
     }
 
@@ -37,44 +25,80 @@ function validateInputFields($connection) {
     return $errors;
 }
 
-function createHashPassword($user) {
-    $password = password_hash($user['password'], PASSWORD_DEFAULT);
-
-    $user['password'] = $password;
+function getUserFromDB($connection, $value) {
+    $email = mysqli_real_escape_string($connection, $value);
+    $sql = "SELECT * FROM users WHERE email= '$email'";
+    $result = mysqli_query($connection, $sql);
+    
+    $user = $result ? mysqli_fetch_assoc($result) : null;
 
     return $user;
 }
 
-function insertUserToDB($connection, $user) {
-    $userForDB = createHashPassword($user);
-
-    $sql = 'INSERT INTO users 
-    (`date_created`, `email`, `password`, `name`, `contact`)
-    VALUES (NOW(), ?, ?, ?, ?)'; 
-
-    $stmt = db_get_prepare_stmt($connection, $sql, $userForDB);
-    $result = mysqli_stmt_execute($stmt);
-
-    if ($result) {
-        header('Location: /pages/login.html');
+function checkSession() {
+    if (isset($_SESSION['user'])) {
+        header("Location: /");
         exit();
-    } else {
-        $error = mysqli_error($connection);
-        print("Ошибка MySQL: " . $error);
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $errors = validateInputFields($connection);
-
-    if (!empty($errors)) {
-        $templateData['errors'] = $errors;
-    } else {
-        $user = $_POST;
-        insertUserToDB($connection, $user);
+function verifyPassword($formPassword, $user) {
+    if (password_verify($formPassword, $user['password'])) {
+        $_SESSION['user'] = $user;
     }
+    else {
+        $_SESSION['errors'] = 'Вы ввели неверный пароль';
+    }
+
+    return $_SESSION;
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $errors = validateInputFields();
+
+    $email = $_POST['email'];
+    $user = getUserFromDB($connection, $email);
+
+    switch ($errors) {
+        case (!empty($errors)):
+            $templateData['errors'] = $errors;
+            break;
+        case (empty($errors) and !$user):
+            $errors['email'] = 'Такой пользователь не найден';
+            var_dump($errors);
+            break;
+        case (empty($errors) and $user):
+            password_verify($_POST['password'], $user['password']) ? $_SESSION['user'] = $user : $errors['password'] = 'Вы ввели неверный пароль';
+            var_dump($errors);
+            break;
+        default:
+            header("Location: /");
+            exit();
+    }
+
+    // if (empty($errors) and $user) {
+    //     if (password_verify($_POST['password'], $user['password'])) {
+	// 		$_SESSION['user'] = $user;
+	// 	}
+	// 	else {
+	// 		$errors['password'] = 'Вы ввели неверный пароль';
+	// 	}
+
+    // } else {
+    //     $errors['email'] = 'Такой пользователь не найден';
+    // }
+
+    // if (!empty($errors)) {
+    //     $templateData['errors'] = $errors;
+    // } else {
+    //     header("Location: /");
+	// 	exit();
+    // }
+
 } else {
     $templateData=[];
+    checkSession();
 }
 
 // HTML-код формы регистрации
