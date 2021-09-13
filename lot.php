@@ -56,8 +56,6 @@ $footer_content = include_template('/footer.php');
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
     'title' => $lot[0]['title'],
-    'isAuth' => $isAuth,
-    'userName' => $userName,
     'navigation' => $navigation,
     'content' => $content,
     'footer' => $footer_content,

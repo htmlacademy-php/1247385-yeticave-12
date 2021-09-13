@@ -23,7 +23,7 @@
 
             <nav class="user-menu">
             <!-- код для показа меню и данных пользователя -->
-                <?php if ($_SESSION): ?>
+                <?php if ($_SESSION['user']): ?>
                     <div class="user-menu__logged">
                         <p><?= $_SESSION['user']['name']; ?></p>
                         <a class="user-menu__bets" href="pages/my-bets.html">Мои ставки</a>

@@ -2,6 +2,8 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
+loginRequired();
+
 $categoriesIds = array_column($categories, 'id');
 
 function validateInputFields($categoriesIds) {
@@ -50,10 +52,10 @@ function validateInputFields($categoriesIds) {
 }
 
 function insertLotToDB($connection, $lot) {
-    $sql = 'INSERT INTO lots 
-    (`date_created`, `title`, `category_id`, `description`, `start_price`, 
+    $sql = 'INSERT INTO lots
+    (`date_created`, `title`, `category_id`, `description`, `start_price`,
     `step_price`, `date_exp`, `image`, `author_id`)
-    VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, 1)'; 
+    VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?)';
 
     $stmt = db_get_prepare_stmt($connection, $sql, $lot);
     $result = mysqli_stmt_execute($stmt);
@@ -79,6 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lot = $_POST;
         $lot['lot-img'] = getImageUrl();
 
+        $lot['author_id'] = $_SESSION['user']['id'];
+
         insertLotToDB($connection, $lot);
     }
 } else {
@@ -96,8 +100,6 @@ $footer_content = include_template('/footer.php');
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
     'title' => 'Добавление лота',
-    'isAuth' => $isAuth,
-    'userName' => $userName,
     'navigation' => $navigation,
     'content' => $page_content,
     'footer' => $footer_content,

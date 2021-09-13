@@ -1,9 +1,6 @@
 <?php
 session_start();
 
-$isAuth = rand(0, 1);
-$userName = 'Anastasya'; // укажите здесь ваше имя
-
 $scripts = [
     'flatpickr.js',
     'script.js'
