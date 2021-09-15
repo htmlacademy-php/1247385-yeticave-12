@@ -2,9 +2,7 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-$templateData=[
-    'categories' => $categories
-];
+alreadyRegisteredUser();
 
 function validateInputFields($connection) {
     $required = ['email', 'password', 'name', 'message'];
@@ -12,7 +10,7 @@ function validateInputFields($connection) {
 
     $rules = [
         'email' => function($value) use ($connection) {
-            return validateEmail($value, $connection);
+            return validateEmailWithDB($value, $connection);
         },
         'password' => function($value) {
             return validateLength($value, 5, 32);
@@ -52,15 +50,15 @@ function createHashPassword($user) {
 function insertUserToDB($connection, $user) {
     $userForDB = createHashPassword($user);
 
-    $sql = 'INSERT INTO users 
+    $sql = 'INSERT INTO users
     (`date_created`, `email`, `password`, `name`, `contact`)
-    VALUES (NOW(), ?, ?, ?, ?)'; 
+    VALUES (NOW(), ?, ?, ?, ?)';
 
     $stmt = db_get_prepare_stmt($connection, $sql, $userForDB);
     $result = mysqli_stmt_execute($stmt);
 
     if ($result) {
-        header('Location: /pages/login.html');
+        header('Location: /login.php');
         exit();
     } else {
         $error = mysqli_error($connection);
@@ -78,20 +76,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         insertUserToDB($connection, $user);
     }
 } else {
-    $templateData = $templateData;
+    $templateData = [];
 }
 
 // HTML-код формы регистрации
 $page_content = include_template('/sign-up.php', $templateData);
 
+// HTML-код блока nav в верхней и нижней части сайта
+$navigation = include_template('/navigation.php', ['categories' => $categories]);
+
 // HTML-код блока footer
-$footer_content = include_template('/footer.php', ['categories' => $categories]);
+$footer_content = include_template('/footer.php');
 
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
     'title' => 'Регистрация',
-    'isAuth' => $isAuth,
-    'userName' => $userName,
+    'navigation' => $navigation,
     'content' => $page_content,
     'footer' => $footer_content
 ]);

@@ -47,14 +47,16 @@ if (http_response_code() === 200) {
     $content = include_template('/404.php', ['categories' => $categories]);
 }
 
+// HTML-код блока nav в верхней и нижней части сайта
+$navigation = include_template('/navigation.php', ['categories' => $categories]);
+
 // HTML-код блока footer
-$footer_content = include_template('/footer.php', ['categories' => $categories]);
+$footer_content = include_template('/footer.php');
 
 // окончательный HTML-код
 $layout_content = include_template('/layout.php', [
     'title' => $lot[0]['title'],
-    'isAuth' => $isAuth,
-    'userName' => $userName,
+    'navigation' => $navigation,
     'content' => $content,
     'footer' => $footer_content,
 ]);

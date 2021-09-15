@@ -223,7 +223,7 @@ function checkEmailExists($value, $connection) {
     return null;
 }
 
-function validateEmail($value, $connection) {
+function validateEmailWithDB($value, $connection) {
     $email = filter_var($value, FILTER_VALIDATE_EMAIL);
 
     if($email) {
@@ -233,6 +233,14 @@ function validateEmail($value, $connection) {
     }
 
     return null;
+}
+
+function validateEmail($value) {
+    $email = filter_var($value, FILTER_VALIDATE_EMAIL);
+
+    if (!$email) {
+        return "Введите корректный email";
+    }
 }
 
 function validatePrice($value) {
@@ -280,7 +288,7 @@ function validateImg() {
         $tmpName = $_FILES['lot-img']['tmp_name'];
 
         $fileType = mime_content_type($tmpName);
-    
+
         if (!in_array($fileType, $mimeTypes)) {
             return 'Допустимый формат для изображений - jpg, jpeg, png';
         }
@@ -300,4 +308,24 @@ function getImageUrl() {
     move_uploaded_file($tmpName, $filePath . $fileName);
 
     return $fileUrl;
+}
+
+function loginRequired() {
+    if (empty($_SESSION['user'])) {
+        http_response_code(403);
+        echo '<h1>Error 403</h1>
+                <h2>Страница доступна только зарегистрированным пользователям</h2>
+                <p><a href="sign-up.php">Зарегистрироваться</a> или <a href="login.php">Войти</a></p>';
+        exit();
+    }
+}
+
+function alreadyRegisteredUser() {
+    if (!empty($_SESSION['user'])) {
+        http_response_code(403);
+        echo '<h1>Error 403</h1>
+                <h2>Вы уже зарегистрированы!</h2>
+                <p><a href="logout.php">Выйти из аккаунта</a></p>';
+        exit();
+    }
 }
