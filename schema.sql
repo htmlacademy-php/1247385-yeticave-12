@@ -30,6 +30,7 @@ CREATE INDEX idx_date_created ON lots(date_created);
 CREATE INDEX idx_title ON lots(title);
 CREATE INDEX idx_date_exp ON lots(date_exp);
 CREATE INDEX idx_start_price ON lots(start_price);
+CREATE FULLTEXT INDEX idx_ft_lot ON lots(title, description);
 
 CREATE TABLE bets (
   id INT AUTO_INCREMENT PRIMARY KEY,

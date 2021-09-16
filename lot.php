@@ -49,7 +49,7 @@ function setTemplateData($lot, $isAuth) {
 if ($connection) {
     $lot = getLotFromDb($connection);
 } else {
-    print('Ошибка подключения: ' . mysqli_connect_error());
+    showConnectionError();
 }
 
 // HTML-код лота

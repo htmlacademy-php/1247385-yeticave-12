@@ -16,6 +16,10 @@ $extraCss = '<link href="../css/flatpickr.min.css" rel="stylesheet">';
 $connection = mysqli_connect("localhost", "root", "root", "yeticave");
 mysqli_set_charset($connection, "utf8");
 
+function showConnectionError() {
+    print('Ошибка подключения: ' . mysqli_connect_error());
+}
+
 function getDataFromDB($connection, $sql) {
     if ($connection) {
         $result = mysqli_query($connection, $sql);
@@ -28,7 +32,7 @@ function getDataFromDB($connection, $sql) {
             print("Ошибка MySQL: " . $error);
         }
     } else {
-        print('Ошибка подключения: ' . mysqli_connect_error());
+        showConnectionError();
     }
     return $data;
 }
