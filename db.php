@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (!empty($_SESSION['user'])) {
+    $isAuth = true;
+    $userName = $_SESSION['user']['name'];
+}
+
 $scripts = [
     'flatpickr.js',
     'script.js'

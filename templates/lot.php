@@ -9,7 +9,7 @@
             <p class="lot-item__description"><?= $lot['description']; ?></p>
         </div>
         <div class="lot-item__right">
-            <?php if(!empty($_SESSION['user'])): ?>
+            <?php if ($isAuth): ?>
                 <div class="lot-item__state">
                     <div class="lot-item__timer timer <?= $lot['isNew'] ? 'timer--finishing' : '' ?>">
                         <?= $lot['hours'] . ':' . $lot['minutes'] ?>
