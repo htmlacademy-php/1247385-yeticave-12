@@ -3,12 +3,15 @@
         <h2>Результаты поиска по запросу «<span><?= strip_tags($search); ?></span>»</h2>
         <?= $gridLots ? $gridLots : $errors; ?>
     </section>
-    <ul class="pagination-list">
-        <li class="pagination-item pagination-item-prev"><a>Назад</a></li>
-        <li class="pagination-item pagination-item-active"><a>1</a></li>
-        <li class="pagination-item"><a href="#">2</a></li>
-        <li class="pagination-item"><a href="#">3</a></li>
-        <li class="pagination-item"><a href="#">4</a></li>
-        <li class="pagination-item pagination-item-next"><a href="#">Вперед</a></li>
-    </ul>
+    <?php if ($pagesCount > 1): ?>
+        <ul class="pagination-list">
+            <?php foreach ($pages as $page): ?>
+<!--                <li class="pagination-item pagination-item-prev"><a>Назад</a></li>-->
+                <li class="pagination-item <?= ($page === $currentPage) ? 'pagination-item-active' : ''; ?>">
+                    <a href="/?page=<?= $page; ?>"><?= $page; ?></a>
+                </li>
+<!--                <li class="pagination-item pagination-item-next"><a href="#">Вперед</a></li>-->
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
 </div>
