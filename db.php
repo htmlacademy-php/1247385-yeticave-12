@@ -1,5 +1,9 @@
 <?php
+require_once 'config.php';
 session_start();
+
+$connection = mysqli_connect($db['host'], $db['user'], $db['password'], $db['database']);
+mysqli_set_charset($connection, "utf8");
 
 if (!empty($_SESSION['user'])) {
     $isAuth = true;
@@ -12,9 +16,6 @@ $scripts = [
 ];
 
 $extraCss = '<link href="../css/flatpickr.min.css" rel="stylesheet">';
-
-$connection = mysqli_connect("localhost", "root", "root", "yeticave");
-mysqli_set_charset($connection, "utf8");
 
 function showConnectionError() {
     print('Ошибка подключения: ' . mysqli_connect_error());
