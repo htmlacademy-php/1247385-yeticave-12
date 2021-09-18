@@ -10,6 +10,20 @@ function setUrlPath($value) {
     return $_SERVER['SCRIPT_NAME'] . '?' . http_build_query($params);
 }
 
+function prepareSearchQuery($enteredSearchText) {
+    $searchWords = explode(' ', $enteredSearchText);
+
+    $search = '';
+
+    foreach ($searchWords as $word) {
+        $search .= $word . '* ';
+    }
+
+    $search = trim($search);
+
+    return $search;
+}
+
 function createPagination($lots) {
     $itemsCount = count($lots); // количество найденных в БД лотов
 
@@ -34,7 +48,7 @@ function searchForMatches($connection, $search, $templateData) {
     $sql = 'SELECT lots.id as id, lots.title as title, lots.description as description,
        `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '
         . 'JOIN `categories` ON categories.id = `category_id` '
-        . 'WHERE `date_exp` > NOW() AND MATCH(lots.title, description) AGAINST(?) '
+        . 'WHERE `date_exp` > NOW() AND MATCH(lots.title, description) AGAINST(? IN BOOLEAN MODE) '
         . 'ORDER BY `date_created` DESC ';
 
     $stmt = db_get_prepare_stmt($connection, $sql, [$search]);
@@ -58,8 +72,11 @@ function searchForMatches($connection, $search, $templateData) {
 }
 
 if ($connection) {
-    $search = trim($_GET['search']) ?? '';
-    $templateData['search'] = $search;
+    $enteredSearchText = trim($_GET['search']) ?? '';
+
+    $search = prepareSearchQuery($enteredSearchText);
+
+    $templateData['search'] = $enteredSearchText;
 
     if ($search && mb_strlen($search) >= 3) {
         $templateData += searchForMatches($connection, $search, $templateData);

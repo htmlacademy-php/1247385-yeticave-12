@@ -1,8 +1,9 @@
 <?php
 require_once 'config.php';
+
 session_start();
 
-$connection = mysqli_connect($db['host'], $db['user'], $db['password'], $db['database']);
+$connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
 mysqli_set_charset($connection, "utf8");
 
 if (!empty($_SESSION['user'])) {
