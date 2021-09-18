@@ -31,21 +31,29 @@ function getLotFromDb($connection) {
     return $lot;
 }
 
+// показываем шаблон в зависимости от наличия лота в БД
+function setTemplateData($lot, $isAuth) {
+    if (http_response_code() === 200) {
+        $content = include_template('/lot.php', [
+            // берем первый и единственный элемент массива
+            'lot' => createDetailProducts($lot)[0],
+            'isAuth' => $isAuth
+        ]);
+    } else {
+        $content = include_template('/404.php');
+    }
+
+    return $content;
+}
+
 if ($connection) {
     $lot = getLotFromDb($connection);
 } else {
-    print('Ошибка подключения: ' . mysqli_connect_error());
+    showConnectionError();
 }
 
-if (http_response_code() === 200) {
-    $content = include_template('/lot.php', [
-        'categories' => $categories,
-        // берем первый и единственный элемент массива
-        'lot' => createDetailProducts($lot)[0]
-    ]);
-} else {
-    $content = include_template('/404.php', ['categories' => $categories]);
-}
+// HTML-код лота
+$page_content = setTemplateData($lot, $isAuth);
 
 // HTML-код блока nav в верхней и нижней части сайта
 $navigation = include_template('/navigation.php', ['categories' => $categories]);
@@ -57,7 +65,9 @@ $footer_content = include_template('/footer.php');
 $layout_content = include_template('/layout.php', [
     'title' => $lot[0]['title'],
     'navigation' => $navigation,
-    'content' => $content,
+    'isAuth' => $isAuth,
+    'userName' => $userName,
+    'content' => $page_content,
     'footer' => $footer_content,
 ]);
 

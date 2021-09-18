@@ -10,11 +10,15 @@ $sqlProducts = 'SELECT lots.id as id, lots.title as title, `start_price` as pric
     . 'ORDER BY `date_created`';
 $products = getDataFromDB($connection, $sqlProducts);
 
+// HTML-код блока с сеткой лотов
+$gridLots = include_template('/grid-lots.php', [
+    'products' => createDetailProducts($products)
+]);
 
 // HTML-код блока main
 $page_content = include_template('/main.php', [
     'categories' => $categories,
-    'products' => createDetailProducts($products)
+    'gridLots' => $gridLots
 ]);
 
 // HTML-код блока nav в верхней и нижней части сайта
@@ -27,6 +31,8 @@ $footer_content = include_template('/footer.php');
 $layout_content = include_template('/layout.php', [
     'title' => $title,
     'navigation' => $navigation,
+    'isAuth' => $isAuth,
+    'userName' => $userName,
     'content' => $page_content,
     'footer' => $footer_content,
     'scripts' => includeScripts($scripts),

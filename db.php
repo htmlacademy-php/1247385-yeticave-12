@@ -1,5 +1,15 @@
 <?php
+require_once 'config.php';
+
 session_start();
+
+$connection = mysqli_connect(HOST, USER, PASSWORD, DATABASE);
+mysqli_set_charset($connection, "utf8");
+
+if (!empty($_SESSION['user'])) {
+    $isAuth = true;
+    $userName = $_SESSION['user']['name'];
+}
 
 $scripts = [
     'flatpickr.js',
@@ -8,8 +18,9 @@ $scripts = [
 
 $extraCss = '<link href="../css/flatpickr.min.css" rel="stylesheet">';
 
-$connection = mysqli_connect("localhost", "root", "root", "yeticave");
-mysqli_set_charset($connection, "utf8");
+function showConnectionError() {
+    print('Ошибка подключения: ' . mysqli_connect_error());
+}
 
 function getDataFromDB($connection, $sql) {
     if ($connection) {
@@ -23,7 +34,7 @@ function getDataFromDB($connection, $sql) {
             print("Ошибка MySQL: " . $error);
         }
     } else {
-        print('Ошибка подключения: ' . mysqli_connect_error());
+        showConnectionError();
     }
     return $data;
 }
