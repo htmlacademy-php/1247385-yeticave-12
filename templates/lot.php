@@ -17,12 +17,35 @@
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
-                            <span class="lot-item__cost"><?= formatPrice($lot['price']); ?></span>
+                            <span class="lot-item__cost"><?= $currentPrice; ?></span>
                         </div>
                         <div class="lot-item__min-cost">
-                            Мин. ставка <span>12 000 р</span>
+                            Мин. ставка <span><?= formatPrice($lot['minBet']); ?></span>
                         </div>
                     </div>
+                    <form class="lot-item__form" action="lot.php?id=<?= $lot['id']; ?>" method="post" autocomplete="off">
+                        <p class="lot-item__form-item <?= !empty($error) ? 'form__item--invalid' : ''; ?>">
+                            <label for="cost">Ваша ставка</label>
+                            <input id="cost" type="text" name="cost" placeholder="<?= formatPrice($lot['minBet']); ?>"
+                                   value="<?= $error ? getPostVal('cost') : ''; ?>">
+                            <span class="form__error"><?= $error; ?></span>
+                        </p>
+                        <button type="submit" class="button">Сделать ставку</button>
+                    </form>
+                </div>
+                <div class="history">
+                    <h3>История ставок (<span><?= $history ? count($history) : 0; ?></span>)</h3>
+                    <?php if($history): ?>
+                        <table class="history__list">
+                            <?php foreach ($history as $bet): ?>
+                                <tr class="history__item">
+                                    <td class="history__name"><?= strip_tags($bet['name']); ?></td>
+                                    <td class="history__price"><?= strip_tags(formatPrice($bet['price'])); ?></td>
+                                    <td class="history__time">5 минут назад</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

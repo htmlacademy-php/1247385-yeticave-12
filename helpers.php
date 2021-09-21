@@ -253,12 +253,12 @@ function validatePrice($value) {
     return null;
 }
 
-function validatePriceStep($value) {
-    $options = ['options' => ['min_range' => 1]];
+function validatePriceStep($value, $minRange = 1) {
+    $options = ['options' => ['min_range' => $minRange]];
     $step = filter_var($value, FILTER_VALIDATE_INT, $options);
 
     if(!$step) {
-        return "Шаг ставки должен быть целым числом больше ноля";
+        return "Введите целое число больше или равно $minRange";
     }
 
     return null;

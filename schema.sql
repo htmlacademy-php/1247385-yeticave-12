@@ -34,13 +34,13 @@ CREATE FULLTEXT INDEX idx_ft_lot ON lots(title, description);
 
 CREATE TABLE bets (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  date_released TIMESTAMP NOT NULL,
-  price DECIMAL NOT NULL,
+  date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  price INT NOT NULL,
   user_id INT NOT NULL,
   lot_id INT NOT NULL
 );
 
-CREATE INDEX idx_date_released ON bets(date_released);
+CREATE INDEX idx_date_created ON bets(date_created);
 
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,

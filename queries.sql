@@ -22,7 +22,7 @@ VALUES ('2014 Rossignol District Snowboard', 1, 10999, 'img/lot-1.jpg', TIMESTAM
        ('Маска Oakley Canopy', 6, 5400, 'img/lot-6.jpg', TIMESTAMPADD(HOUR, 3, CURRENT_TIMESTAMP), 2);
 
 /* Заполняем таблицу Ставок */
-INSERT INTO bets (date_released, price, user_id, lot_id)
+INSERT INTO bets (date_created, price, user_id, lot_id)
 VALUES (TIMESTAMPADD(MINUTE, 15, CURRENT_TIMESTAMP), 11000, 1, 1),
        (TIMESTAMPADD(MINUTE, 10, CURRENT_TIMESTAMP), 99999, 2, 6);
 
