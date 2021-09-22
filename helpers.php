@@ -329,3 +329,50 @@ function alreadyRegisteredUser() {
         exit();
     }
 }
+
+function checkLotDateActual($date) {
+    $currentDate = strtotime('now');
+    $expiryDate = strtotime($date);
+
+    $diff = $expiryDate - $currentDate;
+
+    if ($diff <= 0) {
+        return false;
+    }
+
+    return true;
+}
+
+function convertHistoryDates(array $history) {
+    $detailHistory = [];
+
+    foreach ($history as $unit) {
+
+        $currentDate = strtotime('now');
+        $expiryDate = strtotime($unit['date_created']);
+
+        $diff = $currentDate - $expiryDate;
+
+        $hours = floor($diff / 3600);
+        $minutes = floor(($diff % 3600) / 60);
+
+        switch ($hours) {
+            case ($hours < 0):
+                $unit['detailDate'] = $minutes . ' ' . get_noun_plural_form($minutes,
+                        'минута', 'минуты', 'минут') . ' назад';
+                break;
+            case ($hours >= 1 && $hours < 24):
+                $unit['detailDate'] = $hours . ' ' . get_noun_plural_form($hours,
+                        'час', 'часа', 'часов') . ' '
+                        . $minutes . ' ' . get_noun_plural_form($minutes,
+                        'минута', 'минуты', 'минут') . ' назад';
+                break;
+            default:
+                $unit['detailDate'] = date_format(date_create($unit['date_created']), 'd.m.Y в H:i');
+        }
+
+        $detailHistory[] = $unit;
+    }
+
+    return $detailHistory;
+}

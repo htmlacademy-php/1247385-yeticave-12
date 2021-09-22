@@ -50,9 +50,9 @@ SET title = 'New perfect lot with new great name'
 WHERE id = 1;
 
 /* Получаем список ставок для лота по его идентификатору с сортировкой по дате */
-SELECT title, date_released, price, users.name
+SELECT title, date_created, price, users.name
 FROM bets
        JOIN lots ON lots.id = bets.lot_id
        JOIN users ON users.id = user_id
 WHERE bets.lot_id = 1
-ORDER BY date_released DESC
+ORDER BY date_created DESC
