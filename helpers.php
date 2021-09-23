@@ -168,19 +168,23 @@ function getExpirationDate($date) {
     $diff = $expiryDate - $currentDate;
 
     $hours = str_pad(floor($diff / 3600), 2, '0', STR_PAD_LEFT);
-    $minutes = str_pad(floor(($diff % 3600) / 60), 2, "0", STR_PAD_LEFT);
+    $diff = $diff % 3600;
 
-    return [$hours, $minutes];
+    $minutes = str_pad(floor($diff / 60), 2, "0", STR_PAD_LEFT);
+    $seconds = str_pad(floor($diff %  60), 2, "0", STR_PAD_LEFT);
+
+    return [$hours, $minutes, $seconds];
 }
 
 function createDetailProducts(array $products) {
     $detailProducts = [];
 
     foreach ($products as $product) {
-        list($hours, $minutes) = getExpirationDate($product['expiration']);
+        list($hours, $minutes, $seconds) = getExpirationDate($product['expiration']);
 
         $product['hours'] = $hours;
         $product['minutes'] = $minutes;
+        $product['seconds'] = $seconds;
         $product['isNew'] = $hours < 1;
 
         $detailProducts[] = $product;
@@ -366,6 +370,9 @@ function convertHistoryDates(array $history) {
                         'час', 'часа', 'часов') . ' '
                         . $minutes . ' ' . get_noun_plural_form($minutes,
                         'минута', 'минуты', 'минут') . ' назад';
+                break;
+            case ($hours >= 24 && $hours < 48):
+                $unit['detailDate'] = date_format(date_create($unit['date_created']), 'вчера в H:i');
                 break;
             default:
                 $unit['detailDate'] = date_format(date_create($unit['date_created']), 'd.m.Y в H:i');

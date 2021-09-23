@@ -113,6 +113,7 @@ function getBetsHistory($connection, $lot) {
     if ($result && mysqli_num_rows($result) !==0) {
         $history = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
+        // выводим дату ставки в человекопонятном формате
         $history = convertHistoryDates($history);
     } else {
         showQueryError($connection);
@@ -131,7 +132,7 @@ function checkFormVisibility($lot, $history, $userId) {
 }
 
 // показываем шаблон в зависимости от наличия лота в БД
-function setTemplateData($lot, $isAuth, $error, $history, $isVisible, $userId) {
+function setTemplateData($lot, $isAuth, $error, $history, $userId) {
     if (http_response_code() === 200) {
         $content = include_template('/lot.php', [
             'lot' => $lot,
@@ -170,7 +171,7 @@ if ($connection) {
 }
 
 // HTML-код лота
-$page_content = setTemplateData($lot, $isAuth, $error, $history, $isVisible, $userId);
+$page_content = setTemplateData($lot, $isAuth, $error, $history, $userId);
 
 // HTML-код блока nav в верхней и нижней части сайта
 $navigation = include_template('/navigation.php', ['categories' => $categories]);
