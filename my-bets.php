@@ -24,7 +24,7 @@ function getMyBetsHistory($connection, $userId) {
         // выводим ЧЧ:ММ:СС для даты окончания лота
         $history = createDetailProducts($history);
     } else {
-        $_SESSION['systemMessage'] = 'Вы еще не делали ставок!';
+        $history = [];
     }
 
     return $history;
@@ -56,6 +56,7 @@ function searchForWinners($connection, $history, $userId) {
                     $item['state'] = 'end';
                     break;
             }
+            $item['step_price'] = formatPrice($item['step_price']);
 
             $historyWithWinners[] = $item;
         }
