@@ -5,7 +5,7 @@ require_once 'db.php';
 // пробуем поискать все свои ставки
 function getMyBetsHistory($connection, $userId) {
     $sql = 'SELECT bets.date_created, `price`, users.name, bets.lot_id,
-            lots.title as title, `image` as url, `date_exp` as expiration,
+            lots.title as title, `image` as url, `step_price`, `date_exp` as expiration,
             contact, categories.title as category FROM bets '
         . 'JOIN `lots` ON lots.id = `lot_id` '
         . 'JOIN `categories` ON categories.id = `category_id` '

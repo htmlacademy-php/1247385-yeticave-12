@@ -30,7 +30,7 @@
                     <?php endswitch; ?>
                 </td>
                 <td class="rates__price">
-                    <?= formatPrice($bet['price']); ?>
+                    <?= formatPrice($bet['step_price']); ?>
                 </td>
                 <td class="rates__time">
                     <?= $bet['detailDate']; ?>
