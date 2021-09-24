@@ -58,8 +58,6 @@ function searchForWinners($connection, $history, $userId) {
             }
 
             $historyWithWinners[] = $item;
-        } else {
-            $_SESSION['systemMessage'] = 'Не удалось выбрать данные по вашему запросу';
         }
     }
 

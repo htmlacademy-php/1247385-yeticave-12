@@ -71,8 +71,7 @@ function insertLotToDB($connection, $lot) {
         $lotId = mysqli_insert_id($connection);
         header('Location: lot.php?id=' . $lotId);
     } else {
-        $error = mysqli_error($connection);
-        print("Ошибка MySQL: " . $error);
+        showQueryError($connection);
     }
 }
 

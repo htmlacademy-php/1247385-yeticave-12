@@ -25,7 +25,7 @@ function showConnectionError() {
 
 function showQueryError($connection) {
     $error = mysqli_error($connection);
-    print("Ошибка MySQL: " . $error);
+//    print("Ошибка MySQL: " . $error);
 }
 
 function getDataFromDB($connection, $sql) {

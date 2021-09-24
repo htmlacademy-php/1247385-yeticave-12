@@ -1,6 +1,5 @@
 <section class="rates container">
     <h2>Мои ставки</h2>
-    <?= $_SESSION['systemMessage']; ?>
     <table class="rates__list">
         <?php foreach ($history as $bet): ?>
             <tr class="rates__item rates__item--<?= $bet['state']; ?>">
