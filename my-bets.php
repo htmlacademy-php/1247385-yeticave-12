@@ -2,12 +2,7 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-$timerStyles = [
-    'finishing' => 'timer--finishing',
-    'win' => 'win',
-    'end' => 'end'
-];
-
+// пробуем поискать все свои ставки
 function getMyBetsHistory($connection, $userId) {
     $sql = 'SELECT bets.date_created, `price`, users.name, bets.lot_id,
             lots.title as title, `image` as url, `date_exp` as expiration,
@@ -29,22 +24,15 @@ function getMyBetsHistory($connection, $userId) {
         // выводим ЧЧ:ММ:СС для даты окончания лота
         $history = createDetailProducts($history);
     } else {
-        showQueryError($connection);
+        $_SESSION['systemMessage'] = 'Вы еще не делали ставок!';
     }
 
     return $history;
 }
 
-function checkLotWinner($connection, $history, $userId) {
+// если ставки были сделаны, проверяем, побеждали ли мы
+function searchForWinners($connection, $history, $userId) {
     $historyWithWinners = [];
-
-//    $sql = 'SELECT `user_id` FROM bets '
-//        . ' WHERE `lot_id`=' . $history['lot_id']
-//        . ' ORDER BY id DESC LIMIT 1';
-
-//    $sql = 'SELECT MAX(`id`) as last_id, lot_id FROM bets '
-//        . ' GROUP BY lot_id'
-//        . ' WHERE `lot_id`=' . $history['lot_id'];
 
     foreach ($history as $item) {
         $sql = 'SELECT `user_id`, `lot_id` FROM bets '
@@ -67,14 +55,23 @@ function checkLotWinner($connection, $history, $userId) {
                 case ($expiration <= date_create() && $winner !== $userId):
                     $item['state'] = 'end';
                     break;
-                case ($expiration && $item['isNew']):
-                    $item['state'] = 'timer--finishing';
             }
 
             $historyWithWinners[] = $item;
         } else {
-            showQueryError($connection);
+            $_SESSION['systemMessage'] = 'Не удалось выбрать данные по вашему запросу';
         }
+    }
+
+    return $historyWithWinners;
+}
+
+// передаем в шаблон данные в зависимости от результата searchForWinners()
+function checkLotWinner($connection, $history, $userId) {
+    if ($history) {
+        $historyWithWinners = searchForWinners($connection, $history, $userId);
+    } else {
+        $historyWithWinners = [];
     }
 
     return $historyWithWinners;
@@ -83,11 +80,6 @@ function checkLotWinner($connection, $history, $userId) {
 if ($connection) {
     $history = getMyBetsHistory($connection, $userId);
     $historyWithWinners = checkLotWinner($connection, $history, $userId);
-
-    echo '<pre>';
-    var_dump($historyWithWinners);
-    echo '</pre>';
-
 } else {
     showConnectionError();
 }
