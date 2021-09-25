@@ -19,18 +19,18 @@
                 </td>
                 <td class="rates__timer">
                     <?php switch ($bet['state']):
-                    case 'win': ?>
-                        <div class="timer timer--win">Ставка выиграла</div>
-                    <?php break; ?>
-                    <?php case 'end': ?>
-                        <div class="timer timer--end">Торги окончены</div>
-                    <?php break; ?>
-                    <?php default: ?>
-                        <div class="timer <?= $bet['isNew'] ? 'timer--finishing' : ''; ?>"><?= $bet['hours'] . ':' . $bet['minutes'] . ':' . $bet['seconds'];; ?></div>
+                        case 'win': ?>
+                            <div class="timer timer--win">Ставка выиграла</div>
+                        <?php break; ?>
+                        <?php case 'end': ?>
+                            <div class="timer timer--end">Торги окончены</div>
+                        <?php break; ?>
+                        <?php default: ?>
+                            <div class="timer <?= $bet['isNew'] ? 'timer--finishing' : ''; ?>"><?= $bet['hours'] . ':' . $bet['minutes'] . ':' . $bet['seconds'];; ?></div>
                     <?php endswitch; ?>
                 </td>
                 <td class="rates__price">
-                    <?= $bet['step_price']; ?>
+                    <?= $bet['step']; ?>
                 </td>
                 <td class="rates__time">
                     <?= $bet['detailDate']; ?>

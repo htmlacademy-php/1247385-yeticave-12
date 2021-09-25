@@ -31,44 +31,42 @@ function getMyBetsHistory($connection, $userId) {
 }
 
 // если ставки были сделаны, проверяем, побеждали ли мы
-function searchForWinners($connection, $history, $userId) {
+function searchForWinners($connection, $userId) {
+    $history = getMyBetsHistory($connection, $userId);
+
     $historyWithWinners = [];
 
-    foreach ($history as $item) {
-        $sql = 'SELECT `user_id`, `lot_id` FROM bets '
-            . ' WHERE `lot_id`=' . $item['lot_id']
-            . ' ORDER BY id DESC LIMIT 1';
-
-        $result = mysqli_query($connection, $sql);
-
-        if ($result && mysqli_num_rows($result) !== 0) {
-            $winnerArray = mysqli_fetch_assoc($result);
-            $winner = $winnerArray['user_id'];
-
-            $expiration = date_create($item['expiration']);
-
-            switch ($expiration) {
-                case ($expiration <= date_create() && $winner === $userId):
-                    $item['winner'] = $winner;
-                    $item['state'] = 'win';
-                    break;
-                case ($expiration <= date_create() && $winner !== $userId):
-                    $item['state'] = 'end';
-                    break;
-            }
-            $item['step_price'] = formatPrice($item['step_price']);
-
-            $historyWithWinners[] = $item;
-        }
-    }
-
-    return $historyWithWinners;
-}
-
-// передаем в шаблон данные в зависимости от результата searchForWinners()
-function checkLotWinner($connection, $history, $userId) {
     if ($history) {
-        $historyWithWinners = searchForWinners($connection, $history, $userId);
+        foreach ($history as $item) {
+            $sql = 'SELECT `user_id`, `lot_id` FROM bets '
+                . ' WHERE `lot_id`=' . $item['lot_id']
+                . ' ORDER BY id DESC LIMIT 1';
+
+            $result = mysqli_query($connection, $sql);
+
+            if ($result && mysqli_num_rows($result) !== 0) {
+                $winnerArray = mysqli_fetch_assoc($result);
+                $winner = $winnerArray['user_id'];
+
+                $expiration = date_create($item['expiration']);
+
+                switch ($expiration) {
+                    case ($expiration <= date_create() && $winner === $userId):
+                        $item['winner'] = $winner;
+                        $item['state'] = 'win';
+                        break;
+                    case ($expiration <= date_create() && $winner !== $userId):
+                        $item['state'] = 'end';
+                        break;
+                    default:
+                        $item['state'] = false;
+                }
+                $item['step'] = formatPrice($item['step_price']);
+                $historyWithWinners[] = $item;
+            } else {
+                $historyWithWinners = [];
+            }
+        }
     } else {
         $historyWithWinners = [];
     }
@@ -77,8 +75,7 @@ function checkLotWinner($connection, $history, $userId) {
 }
 
 if ($connection) {
-    $history = getMyBetsHistory($connection, $userId);
-    $historyWithWinners = checkLotWinner($connection, $history, $userId);
+    $historyWithWinners = searchForWinners($connection, $userId);
 } else {
     showConnectionError();
 }
