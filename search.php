@@ -103,6 +103,7 @@ $layoutContent = include_template('/layout.php', [
     'navigation' => $navigation,
     'isAuth' => $isAuth,
     'userName' => $userName,
+    'searchText' => $enteredSearchText,
     'content' => $pageContent,
     'footer' => $footerContent
 ]);

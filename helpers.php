@@ -168,19 +168,23 @@ function getExpirationDate($date) {
     $diff = $expiryDate - $currentDate;
 
     $hours = str_pad(floor($diff / 3600), 2, '0', STR_PAD_LEFT);
-    $minutes = str_pad(floor(($diff % 3600) / 60), 2, "0", STR_PAD_LEFT);
+    $diff = $diff % 3600;
 
-    return [$hours, $minutes];
+    $minutes = str_pad(floor($diff / 60), 2, "0", STR_PAD_LEFT);
+    $seconds = str_pad(floor($diff %  60), 2, "0", STR_PAD_LEFT);
+
+    return [$hours, $minutes, $seconds];
 }
 
 function createDetailProducts(array $products) {
     $detailProducts = [];
 
     foreach ($products as $product) {
-        list($hours, $minutes) = getExpirationDate($product['expiration']);
+        list($hours, $minutes, $seconds) = getExpirationDate($product['expiration']);
 
         $product['hours'] = $hours;
         $product['minutes'] = $minutes;
+        $product['seconds'] = $seconds;
         $product['isNew'] = $hours < 1;
 
         $detailProducts[] = $product;
@@ -253,12 +257,12 @@ function validatePrice($value) {
     return null;
 }
 
-function validatePriceStep($value) {
-    $options = ['options' => ['min_range' => 1]];
+function validatePriceStep($value, $minRange = 1) {
+    $options = ['options' => ['min_range' => $minRange]];
     $step = filter_var($value, FILTER_VALIDATE_INT, $options);
 
     if(!$step) {
-        return "Шаг ставки должен быть целым числом больше ноля";
+        return "Введите целое число больше или равно $minRange";
     }
 
     return null;
@@ -328,4 +332,54 @@ function alreadyRegisteredUser() {
                 <p><a href="logout.php">Выйти из аккаунта</a></p>';
         exit();
     }
+}
+
+function checkLotDateActual($date) {
+    $currentDate = strtotime('now');
+    $expiryDate = strtotime($date);
+
+    $diff = $expiryDate - $currentDate;
+
+    if ($diff <= 0) {
+        return false;
+    }
+
+    return true;
+}
+
+function convertHistoryDates(array $history) {
+    $detailHistory = [];
+
+    foreach ($history as $unit) {
+
+        $currentDate = strtotime('now');
+        $expiryDate = strtotime($unit['date_created']);
+
+        $diff = $currentDate - $expiryDate;
+
+        $hours = floor($diff / 3600);
+        $minutes = floor(($diff % 3600) / 60);
+
+        switch ($hours) {
+            case ($hours < 0):
+                $unit['detailDate'] = $minutes . ' ' . get_noun_plural_form($minutes,
+                        'минута', 'минуты', 'минут') . ' назад';
+                break;
+            case ($hours >= 1 && $hours < 24):
+                $unit['detailDate'] = $hours . ' ' . get_noun_plural_form($hours,
+                        'час', 'часа', 'часов') . ' '
+                        . $minutes . ' ' . get_noun_plural_form($minutes,
+                        'минута', 'минуты', 'минут') . ' назад';
+                break;
+            case ($hours >= 24 && $hours < 48):
+                $unit['detailDate'] = date_format(date_create($unit['date_created']), 'вчера в H:i');
+                break;
+            default:
+                $unit['detailDate'] = date_format(date_create($unit['date_created']), 'd.m.Y в H:i');
+        }
+
+        $detailHistory[] = $unit;
+    }
+
+    return $detailHistory;
 }

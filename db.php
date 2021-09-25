@@ -9,6 +9,7 @@ mysqli_set_charset($connection, "utf8");
 if (!empty($_SESSION['user'])) {
     $isAuth = true;
     $userName = $_SESSION['user']['name'];
+    $userId = $_SESSION['user']['id'];
 }
 
 $scripts = [
@@ -20,6 +21,11 @@ $extraCss = '<link href="../css/flatpickr.min.css" rel="stylesheet">';
 
 function showConnectionError() {
     print('Ошибка подключения: ' . mysqli_connect_error());
+}
+
+function showQueryError($connection) {
+    $error = mysqli_error($connection);
+//    print("Ошибка MySQL: " . $error);
 }
 
 function getDataFromDB($connection, $sql) {
