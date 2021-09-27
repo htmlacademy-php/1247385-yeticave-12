@@ -1,0 +1,15 @@
+{
+    "name": "master/yeticave",
+    "description": "The YetiCave online auction",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anastasya",
+            "email": "aamokeeva@yandex.ru"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.0"
+    }
+}

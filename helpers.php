@@ -396,7 +396,7 @@ function createPagination($lots) {
     $itemsCount = count($lots); // количество найденных в БД лотов
 
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $limit = 1; // сколько лотов будет показано на странице
+    $limit = 9; // сколько лотов будет показано на странице
     $offset = ($currentPage - 1) * $limit;
 
     $pagesCount = intval(ceil($itemsCount / $limit)); // сколько будет страниц
