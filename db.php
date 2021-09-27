@@ -35,9 +35,7 @@ function getDataFromDB($connection, $sql) {
         if ($result) {
             $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
         } else {
-            $error = mysqli_error($connection);
             $data = [];
-            print("Ошибка MySQL: " . $error);
         }
     } else {
         showConnectionError();

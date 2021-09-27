@@ -2,14 +2,6 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-function setUrlPath($value) {
-    $params = $_GET;
-    $page = intval($value);
-    $params['page'] = $page;
-
-    return $_SERVER['SCRIPT_NAME'] . '?' . http_build_query($params);
-}
-
 function prepareSearchQuery($enteredSearchText) {
     $searchWords = explode(' ', $enteredSearchText);
 
@@ -22,26 +14,6 @@ function prepareSearchQuery($enteredSearchText) {
     $search = trim($search);
 
     return $search;
-}
-
-function createPagination($lots) {
-    $itemsCount = count($lots); // количество найденных в БД лотов
-
-    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-    $limit = 9; // сколько лотов будет показано на странице
-    $offset = ($currentPage - 1) * $limit;
-
-    $pagesCount = intval(ceil($itemsCount / $limit)); // сколько будет страниц
-    $pages = range(1, $pagesCount);
-
-    $products = array_slice($lots, $offset, $limit, true);
-
-    $templateData['products'] = $products;
-    $templateData['pagesCount'] = $pagesCount;
-    $templateData['pages'] = $pages;
-    $templateData['currentPage'] = $currentPage;
-
-    return $templateData;
 }
 
 function searchForMatches($connection, $search, $templateData) {

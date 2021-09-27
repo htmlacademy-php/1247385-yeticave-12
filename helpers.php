@@ -383,3 +383,36 @@ function convertHistoryDates(array $history) {
 
     return $detailHistory;
 }
+
+function setUrlPath($value) {
+    $params = $_GET;
+    $page = intval($value);
+    $params['page'] = $page;
+
+    return $_SERVER['SCRIPT_NAME'] . '?' . http_build_query($params);
+}
+
+function createPagination($lots) {
+    $itemsCount = count($lots); // количество найденных в БД лотов
+
+    $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $limit = 1; // сколько лотов будет показано на странице
+    $offset = ($currentPage - 1) * $limit;
+
+    $pagesCount = intval(ceil($itemsCount / $limit)); // сколько будет страниц
+    $pages = range(1, $pagesCount);
+
+    $products = array_slice($lots, $offset, $limit, true);
+
+    $templateData['products'] = $products;
+
+    // HTML-код блока с пагинацией
+    $pagination = include_template('/pagination.php', [
+        'pagesCount' => $pagesCount,
+        'pages' => $pages,
+        'currentPage' => $currentPage
+    ]);
+    $templateData['pagination'] = $pagination;
+
+    return $templateData;
+}

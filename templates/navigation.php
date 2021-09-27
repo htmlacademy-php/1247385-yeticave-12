@@ -3,7 +3,9 @@
         <!--список из массива категорий-->
         <?php foreach ($categories as $category): ?>
             <li class="nav__item">
-                <a href="all-lots.html"><?= strip_tags($category['title']); ?></a>
+                <a href="all-lots.php?category=<?= strip_tags($category['code']); ?>">
+                    <?= strip_tags($category['title']); ?>
+                </a>
             </li>
         <?php endforeach; ?>
     </ul>

@@ -7,7 +7,7 @@ $title = 'YetiCave - Главная';
 $sqlProducts = 'SELECT lots.id as id, lots.title as title, `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '
     . 'JOIN `categories` ON categories.id = `category_id` '
     . 'WHERE `date_exp` > NOW() '
-    . 'ORDER BY `date_created`';
+    . 'ORDER BY `date_created` DESC';
 $products = getDataFromDB($connection, $sqlProducts);
 
 // HTML-код блока с сеткой лотов
