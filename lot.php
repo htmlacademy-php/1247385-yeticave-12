@@ -41,7 +41,6 @@ function getLotFromDb($connection) {
         $currentLot = $lotDetails[0];
     } else {
         http_response_code(404);
-        showQueryError($connection);
     }
 
     return $currentLot;
@@ -95,11 +94,8 @@ function insertBetToDb($rate, $userId, $lot, $connection) {
             VALUES (NOW(), ?, ?, ?)';
 
     $stmt = db_get_prepare_stmt($connection, $sql, $bet);
-    $result = mysqli_stmt_execute($stmt);
+    mysqli_stmt_execute($stmt);
 
-    if(!$result) {
-        showQueryError($connection);
-    }
 }
 
 function getBetsHistory($connection, $lot) {
@@ -116,7 +112,7 @@ function getBetsHistory($connection, $lot) {
         // выводим дату ставки в человекопонятном формате
         $history = convertHistoryDates($history);
     } else {
-        showQueryError($connection);
+        $history = [];
     }
 
     return $history;

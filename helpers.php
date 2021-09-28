@@ -124,6 +124,7 @@ function get_noun_plural_form (int $number, string $one, string $two, string $ma
  * Подключает шаблон, передает туда данные и возвращает итоговый HTML контент
  * @param string $name Путь к файлу шаблона относительно папки templates
  * @param array $data Ассоциативный массив с данными для шаблона
+ *
  * @return string Итоговый HTML
  */
 function include_template($name, array $data = []) {
@@ -143,7 +144,18 @@ function include_template($name, array $data = []) {
     return $result;
 }
 
-function includeScripts(array $scripts) {
+/**
+ * Подключает скрипты из заданного массива в шаблонах на страницах, где это необходимо,
+ * передает туда данные и возвращает итоговый HTML для вставки в шаблон
+ *
+ * @return string Итоговый HTML
+ */
+function includeScripts() {
+    $scripts = [
+        'flatpickr.js',
+        'script.js'
+    ];
+
     $scriptTags = '';
     $scriptPath = '../';
     foreach ($scripts as $script) {
@@ -152,6 +164,15 @@ function includeScripts(array $scripts) {
     return $scriptTags;
 }
 
+
+/**
+ * Форматирует целое число - принимает число и сравнивает его с 1000.
+ * Если число меньше 1000 - ничего не делает,
+ * если число больше 1000 - отделяет пробелом 3 последние цифры и добавляет знак рубля
+ * @param integer $rawPrice Целое число для форматирования
+ *
+ * @return string Отформатированная сумма со знаком рубля
+ */
 function formatPrice(int $rawPrice) {
     $actualPrice = ceil($rawPrice);
 
@@ -161,7 +182,17 @@ function formatPrice(int $rawPrice) {
     return $actualPrice . ' &#8381;';
 }
 
-function getExpirationDate($date) {
+/**
+ * Возвращает время, оставшееся до даты из будущего в виде массива
+ *
+ * Пример вызова:
+ * $res = get_dt_range("2019-10-11"); // [09, 29, 33]
+ *
+ * @param string $date Дата в виде строки в формате ГГГГ-ММ-ДД
+ *
+ * @return array Массив из трех элементов [часы, минуты, секунды]
+ */
+function getExpirationDate(string $date) {
     $currentDate = strtotime('now');
     $expiryDate = strtotime($date);
 
@@ -176,6 +207,14 @@ function getExpirationDate($date) {
     return [$hours, $minutes, $seconds];
 }
 
+/**
+ * Дополняет переданный массив лотов информацией о новизне продукта (isNew),
+ * и временем, оставшимся до окончания действия лота (hours, minutes, seconds)
+ *
+ * @param array $products Массив, содержащий информацию о дате окончания лота
+ *
+ * @return array Дополненный исходный массив
+ */
 function createDetailProducts(array $products) {
     $detailProducts = [];
 
@@ -192,10 +231,25 @@ function createDetailProducts(array $products) {
     return $detailProducts;
 }
 
+/**
+ * Сохраняет для пользователя введенное в поле формы значение
+ *
+ * @param mixed $name Имя атрибута name формы
+ *
+ * @return string Сохраненное значение, введенное пользователем в поле с атрибутом $name
+ */
 function getPostVal($name) {
     return filter_input(INPUT_POST, $name);
 }
 
+/**
+ * Проверяет, есть ли категория в списке имеющихся категорий
+ *
+ * @param integer $id ID выбранной пользователем категории
+ * @param array $categoriesIds Массив с ID категорий, имеющихся на сайте
+ *
+ * @return string|null Возвращает текст ошибки, если такой категории нет
+ */
 function validateCategory($id, $categoriesIds) {
     if (!in_array($id, $categoriesIds)) {
         return 'Выберите категорию из списка';
@@ -204,7 +258,16 @@ function validateCategory($id, $categoriesIds) {
     return null;
 }
 
-function validateLength($value, $min, $max) {
+/**
+ * Проверяет длину значения, введенного пользователем в поля формы на сайте
+ *
+ * @param string $value Значение, введенное пользователем
+ * @param integer $min Требуемое минимальное количество символов
+ * @param integer $max Требуемое максимальное количество символов
+ *
+ * @return string|null Возвращает текст ошибки, если длина поля выходит за заданные ограничения
+ */
+function validateLength(string $value, int $min, int $max) {
     if ($value) {
         $len = strlen($value);
         if ($len < $min || $len > $max) {
@@ -215,6 +278,14 @@ function validateLength($value, $min, $max) {
     return null;
 }
 
+/**
+ * Проверяет есть ли пользователь с указанным email в БД
+ *
+ * @param string $value Значение email, введенное пользователем
+ * @param mysqli $connection Ресурс соединения
+ *
+ * @return string|null Возвращает текст ошибки, если пользователь уже зарегистрирован
+ */
 function checkEmailExists($value, $connection) {
     $email = mysqli_real_escape_string($connection, $value);
     $sql = "SELECT `id` FROM users WHERE email= '$email'";
@@ -227,6 +298,16 @@ function checkEmailExists($value, $connection) {
     return null;
 }
 
+/**
+ * Проверяет, корректно ли введен email пользователя, и если email корректный,
+ * проверяет есть ли пользователь с таким email в БД
+ *
+ * @param string $value Значение email, введенное пользователем
+ * @param mysqli $connection Ресурс соединения
+ *
+ * @return string|null Возвращает текст ошибки, если введен некорректный email,
+ * или если пользователь уже зарегистрирован на сайте
+ */
 function validateEmailWithDB($value, $connection) {
     $email = filter_var($value, FILTER_VALIDATE_EMAIL);
 
@@ -239,6 +320,13 @@ function validateEmailWithDB($value, $connection) {
     return null;
 }
 
+/**
+ * Проверяет, корректно ли введен email пользователя (без проверки на существование в  БД)
+ *
+ * @param string $value Значение email, введенное пользователем
+ *
+ * @return string|null Возвращает текст ошибки, если введен некорректный email
+ */
 function validateEmail($value) {
     $email = filter_var($value, FILTER_VALIDATE_EMAIL);
 
@@ -247,6 +335,13 @@ function validateEmail($value) {
     }
 }
 
+/**
+ * Проверяет значение цены, введенной пользователем, на соответствие формату
+ *
+ * @param float $value Значение, введенное пользователем
+ *
+ * @return string|null Возвращает текст ошибки, если введенное значение цены меньше или равна нулю
+ */
 function validatePrice($value) {
     $step = filter_var($value, FILTER_VALIDATE_FLOAT);
 
@@ -257,6 +352,14 @@ function validatePrice($value) {
     return null;
 }
 
+/**
+ * Проверяет значение шага цены, введенного пользователем, на соответствие формату
+ *
+ * @param integer $value Значение, введенное пользователем
+ * @param integer $minRange Требуемое минимальное значение, по умолчанию шаг не может быть меньше 1
+ *
+ * @return string|null Возвращает текст ошибки, если введенное значение меньше $minRange
+ */
 function validatePriceStep($value, $minRange = 1) {
     $options = ['options' => ['min_range' => $minRange]];
     $step = filter_var($value, FILTER_VALIDATE_INT, $options);
@@ -268,6 +371,13 @@ function validatePriceStep($value, $minRange = 1) {
     return null;
 }
 
+/**
+ * Проверяет что дата, введенная пользователем, корректна, и соответствует формату ГГГГ-ММ-ДД,
+ * а также больше текущей даты хотя бы на 1 день
+ * @param string $date Значение даты, введенное пользователем
+ *
+ * @return string|null Возвращает текст ошибки, если дата не соответствует формату
+ */
 function validateDate($date) {
     $currentDate = strtotime('now');
     $expiryDate = strtotime($date);
@@ -285,6 +395,11 @@ function validateDate($date) {
     return null;
 }
 
+/**
+ * Проверяет что пользователь загрузил изображение в одном из форматов jpg/jpeg/png
+ *
+ * @return string|null Возвращает текст ошибки, если изображение не соответствует формату
+ */
 function validateImg() {
     if (!empty($_FILES['lot-img']['name'])) {
         $mimeTypes = ['image/png', 'image/jpeg'];
@@ -303,6 +418,11 @@ function validateImg() {
     return null;
 }
 
+/**
+ * Сохраняет изображение в папку uploads и возвращает путь до него на сервере
+ *
+ * @return string Возвращает путь до сохраненного изображения
+ */
 function getImageUrl() {
     $fileName = $_FILES['lot-img']['name'];
     $tmpName = $_FILES['lot-img']['tmp_name'];
@@ -314,6 +434,12 @@ function getImageUrl() {
     return $fileUrl;
 }
 
+/**
+ * Предоставляет доступ к контенту только зарегистрированным пользователям.
+ * Проверяет, что есть открытая сессия для пользователя, и если нет, выводит
+ * предупреждение о необходимости зарегистрироваться со ссылками на страницу
+ * регистрации и входа
+ */
 function loginRequired() {
     if (empty($_SESSION['user'])) {
         http_response_code(403);
@@ -324,6 +450,12 @@ function loginRequired() {
     }
 }
 
+/**
+ * Предоставляет доступ к контенту только НЕзарегистрированным пользователям.
+ * Проверяет, что есть открытая сессия для пользователя, и если да, выводит
+ * предупреждение что пользователь уже зарегистрирован со ссылкой на страницу
+ * выхода из аккаунта
+ */
 function alreadyRegisteredUser() {
     if (!empty($_SESSION['user'])) {
         http_response_code(403);
@@ -334,6 +466,14 @@ function alreadyRegisteredUser() {
     }
 }
 
+/**
+ * Проверяет актуальность даты окончания лота.
+ * Если дата окончания лота меньше или равна текущей, срок лота истек, вернется false.
+ * Если дата окончания больше текущей, лот действующий, вернется true
+ * @param string $date Дата окончания лота
+ *
+ * @return boolean Возвращает true, если лот действующий, и false если срок лота истек
+ */
 function checkLotDateActual($date) {
     $currentDate = strtotime('now');
     $expiryDate = strtotime($date);
@@ -347,6 +487,13 @@ function checkLotDateActual($date) {
     return true;
 }
 
+/**
+ * Для каждого элемента массива на основании имеющейся даты ставки выводит дату в человекопонятном формате
+ * с помощью функции get_noun_plural_form
+ * @param array $history Массив с данными сделанных ставок
+ *
+ * @return array Возвращает исходный массив, дополненный датой в человекопонятном формате
+ */
 function convertHistoryDates(array $history) {
     $detailHistory = [];
 
@@ -384,6 +531,13 @@ function convertHistoryDates(array $history) {
     return $detailHistory;
 }
 
+/**
+ * Используется для пагинации. Помогает построить корректный url,
+ * содержащий имя исполняемого скрипта и переданный в $_GET параметр 'page' - номер страницы
+ * @param string $value Номер страницы
+ *
+ * @return string Возвращает корректный URL, используемый для перехода на нужную страницу
+ */
 function setUrlPath($value) {
     $params = $_GET;
     $page = intval($value);
@@ -392,6 +546,15 @@ function setUrlPath($value) {
     return $_SERVER['SCRIPT_NAME'] . '?' . http_build_query($params);
 }
 
+/**
+ * Создает пагинацию для переданного массива с лотами.
+ * Показывает 9 лотов на каждой странице (по ТЗ)
+ *
+ * @param array $lots Массив с лотами
+ *
+ * @return array Возвращает массив из лотов, разбитых с учетом пагинации,
+ * и шаблон с номерами страниц и оформлением с уже переданными данными для отрисовки
+ */
 function createPagination($lots) {
     $itemsCount = count($lots); // количество найденных в БД лотов
 

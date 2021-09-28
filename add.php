@@ -70,8 +70,6 @@ function insertLotToDB($connection, $lot) {
     if ($result) {
         $lotId = mysqli_insert_id($connection);
         header('Location: lot.php?id=' . $lotId);
-    } else {
-        showQueryError($connection);
     }
 }
 
@@ -111,7 +109,7 @@ $layout_content = include_template('/layout.php', [
     'userName' => $userName,
     'content' => $page_content,
     'footer' => $footer_content,
-    'scripts' => includeScripts($scripts),
+    'scripts' => includeScripts(),
     'extraCss' => $extraCss
 ]);
 

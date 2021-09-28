@@ -36,7 +36,7 @@ $layout_content = include_template('/layout.php', [
     'userName' => $userName,
     'content' => $page_content,
     'footer' => $footer_content,
-    'scripts' => includeScripts($scripts),
+    'scripts' => includeScripts(),
     'homePage' => true,
     'addContainer' => true
 ]);
