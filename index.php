@@ -1,6 +1,7 @@
 <?php
 require_once 'helpers.php';
 require_once 'db.php';
+require_once 'getwinner.php';
 
 $title = 'YetiCave - Главная';
 
