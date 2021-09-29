@@ -12,21 +12,22 @@ alreadyRegisteredUser();
  *
  * @return array Массив с ошибками, если условия не выполнены, или пустой массив, если ошибок не было
  */
-function validateInputFields($connection) {
+function validateInputFields($connection)
+{
     $required = ['email', 'password', 'name', 'message'];
     $errors = [];
 
     $rules = [
-        'email' => function($value) use ($connection) {
+        'email' => function ($value) use ($connection) {
             return validateEmailWithDB($value, $connection);
         },
-        'password' => function($value) {
+        'password' => function ($value) {
             return validateLength($value, 5, 32);
         },
-        'name' => function($value) {
+        'name' => function ($value) {
             return validateLength($value, 4, 128);
         },
-        'message' => function($value) {
+        'message' => function ($value) {
             return validateLength($value, 10, 255);
         }
     ];
@@ -54,7 +55,8 @@ function validateInputFields($connection) {
  *
  * @return array Обновленный массив с данными пользователя, содержащий хеш его пароля
  */
-function createHashPassword($user) {
+function createHashPassword($user)
+{
     $password = password_hash($user['password'], PASSWORD_DEFAULT);
 
     $user['password'] = $password;
@@ -69,7 +71,8 @@ function createHashPassword($user) {
  * @param array $user Массив с данными пользователя для записи в БД
  *
  */
-function insertUserToDB($connection, $user) {
+function insertUserToDB($connection, $user)
+{
     $userForDB = createHashPassword($user);
 
     $sql = 'INSERT INTO users

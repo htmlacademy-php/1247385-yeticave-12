@@ -11,7 +11,8 @@ require_once 'vendor/autoload.php';
  *
  * @return array Массив с данными лотов без победителей
  */
-function getLotsWithoutWinners($connection) {
+function getLotsWithoutWinners($connection)
+{
     $sql = 'SELECT lots.id FROM lots '
         . 'WHERE `date_exp` <= NOW() AND `winner_id` IS NULL';
 
@@ -25,12 +26,13 @@ function getLotsWithoutWinners($connection) {
  * @param array $winner Массив, содержащий информацию о лоте, и победителе
  *
  */
-function sendEmailToWinner($winner) {
+function sendEmailToWinner($winner)
+{
     // Create the Transport
     $transport = (new Swift_SmtpTransport('smtp.mailtrap.io', 2525))
         ->setUsername('014813d666f33f')
-        ->setPassword('cdfc4430cce434')
-    ;
+        ->setPassword('cdfc4430cce434');
+
 
     // Create the Mailer using created Transport
     $mailer = new Swift_Mailer($transport);
@@ -48,8 +50,7 @@ function sendEmailToWinner($winner) {
     $message = (new Swift_Message('Ваша ставка победила'))
         ->setFrom(['keks@phpdemo.ru' => 'Интернет-Аукцион "YetiCave"'])
         ->setTo([$winner['email'] => $winner['name']])
-        ->setBody($content, 'text/html', 'utf8')
-    ;
+        ->setBody($content, 'text/html', 'utf8');
 
     // Send the message
     $mailer->send($message);
@@ -66,7 +67,8 @@ function sendEmailToWinner($winner) {
  *
  * @return array Массив с данными лотов без победителей
  */
-function determineTheWinner($connection) {
+function determineTheWinner($connection)
+{
     $lotsWithoutWinners = getLotsWithoutWinners($connection);
 
     if ($lotsWithoutWinners) {
@@ -81,7 +83,7 @@ function determineTheWinner($connection) {
 
             $result = mysqli_query($connection, $sql);
 
-            if ($result && mysqli_num_rows($result) !==0) {
+            if ($result && mysqli_num_rows($result) !== 0) {
                 // если на лот делали ставки
                 $winner = mysqli_fetch_assoc($result);
 

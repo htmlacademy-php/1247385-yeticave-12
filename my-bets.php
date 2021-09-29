@@ -10,7 +10,8 @@ require_once 'db.php';
  * @return array Массив с данными всех ставок текущего пользователя,
  * или пустой массив, если пользователь не делал ставок
  */
-function getMyBetsHistory($connection, $userId) {
+function getMyBetsHistory($connection, $userId)
+{
     $sql = 'SELECT bets.date_created, `price`, users.name, bets.lot_id,
             lots.title as title, `image` as url, `step_price`, `date_exp` as expiration,
             contact, categories.title as category FROM bets '
@@ -22,7 +23,7 @@ function getMyBetsHistory($connection, $userId) {
 
     $result = mysqli_query($connection, $sql);
 
-    if ($result && mysqli_num_rows($result) !==0) {
+    if ($result && mysqli_num_rows($result) !== 0) {
         $history = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         // выводим дату ставки в человекопонятном формате
@@ -52,7 +53,8 @@ function getMyBetsHistory($connection, $userId) {
  * @return array Массив с данными всех ставок текущего пользователя,
  * или пустой массив, если пользователь не делал ставок
  */
-function searchForWinners($connection, $userId) {
+function searchForWinners($connection, $userId)
+{
     $history = getMyBetsHistory($connection, $userId);
 
     $historyWithWinners = [];

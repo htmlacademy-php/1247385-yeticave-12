@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title><?= $title; ?></title>
-<link href="../css/normalize.min.css" rel="stylesheet">
-<link href="../css/style.css" rel="stylesheet">
-<?= $extraCss; ?>
+    <meta charset="UTF-8">
+    <title><?= $title; ?></title>
+    <link href="../css/normalize.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <?= $extraCss; ?>
 </head>
 <body>
 <div class="page-wrapper">
     <header class="main-header">
         <div class="main-header__container container">
             <h1 class="visually-hidden">YetiCave</h1>
-            <a class="main-header__logo" <?= $homePage ? "" : "href=/"?>>
+            <a class="main-header__logo" <?= $homePage ? "" : "href=/" ?>>
                 <img src="../img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="search.php" autocomplete="off">
@@ -22,7 +22,7 @@
             <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
 
             <nav class="user-menu">
-            <!-- код для показа меню и данных пользователя -->
+                <!-- код для показа меню и данных пользователя -->
                 <?php if ($isAuth): ?>
                     <div class="user-menu__logged">
                         <p><?= $userName; ?></p>

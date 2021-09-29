@@ -2,7 +2,7 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-$templateData=[];
+$templateData = [];
 
 /**
  * Валидирует поля формы авторизации - проверяет их на заполненность, а также на соответствие заданным условиям,
@@ -10,15 +10,16 @@ $templateData=[];
  *
  * @return string|null Текст ошибки, если условия не выполнены, или null, если ошибок не было
  */
-function validateInputFields() {
+function validateInputFields()
+{
     $required = ['email', 'password'];
     $errors = [];
 
     $rules = [
-        'email' => function($value) {
+        'email' => function ($value) {
             return validateEmail($value);
         },
-        'password' => function($value) {
+        'password' => function ($value) {
             return validateLength($value, 5, 32);
         }
     ];
@@ -29,7 +30,7 @@ function validateInputFields() {
             $errors[$key] = $rule($value);
         }
 
-        if(in_array($key, $required) && empty($value)) {
+        if (in_array($key, $required) && empty($value)) {
             $errors[$key] = "Поле $key не может быть пустым";
         }
     }
@@ -47,7 +48,8 @@ function validateInputFields() {
  *
  * @return array Массив с данными запрашиваемого пользователя, или null, если пользователь не найден в БД
  */
-function getUserFromDB($connection, $value) {
+function getUserFromDB($connection, $value)
+{
     $email = mysqli_real_escape_string($connection, $value);
     $sql = "SELECT * FROM users WHERE email= '$email'";
     $result = mysqli_query($connection, $sql);
@@ -68,14 +70,14 @@ function getUserFromDB($connection, $value) {
  *
  * @return array Массив с данными об ошибках
  */
-function checkUserPassword($user, $errors) {
+function checkUserPassword($user, $errors)
+{
     if ($user) {
         if (password_verify($_POST['password'], $user['password'])) {
             $_SESSION['user'] = $user;
             header("Location: /");
             exit();
-        }
-        else {
+        } else {
             $errors['password'] = 'Вы ввели неверный пароль';
         }
     } else {
@@ -90,7 +92,8 @@ function checkUserPassword($user, $errors) {
  * и если открыта - выполняет редирект на главную страницу сайта,
  * и завершает выполнение скрипта
  */
-function checkSession() {
+function checkSession()
+{
     if (isset($_SESSION['user'])) {
         header("Location: /");
         exit();
@@ -110,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $templateData['errors'] = $errors;
 } else {
-    $templateData=[];
+    $templateData = [];
     checkSession();
 }
 

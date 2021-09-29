@@ -11,29 +11,30 @@ loginRequired();
  *
  * @return string|null Текст ошибок, если условия не выполнены, или null, если ошибок не было
  */
-function validateInputFields($categories) {
+function validateInputFields($categories)
+{
     $categoriesIds = array_column($categories, 'id');
 
     $required = ['lot-name', 'category', 'message', 'lot-img', 'lot-rate', 'lot-step', 'lot-date'];
     $errors = [];
 
     $rules = [
-        'lot-name' => function($value) {
+        'lot-name' => function ($value) {
             return validateLength($value, 10, 200);
         },
-        'category' => function($value) use ($categoriesIds) {
+        'category' => function ($value) use ($categoriesIds) {
             return validateCategory($value, $categoriesIds);
         },
-        'message' => function($value) {
+        'message' => function ($value) {
             return validateLength($value, 10, 500);
         },
-        'lot-rate' => function($value) {
+        'lot-rate' => function ($value) {
             return validatePrice($value);
         },
-        'lot-step' => function($value) {
+        'lot-step' => function ($value) {
             return validatePriceStep($value);
         },
-        'lot-date' => function($date) {
+        'lot-date' => function ($date) {
             return validateDate($date);
         }
     ];
@@ -66,7 +67,8 @@ function validateInputFields($categories) {
  * @param array $lot Массив с данными лота, введенными пользователем в форме добавления лота
  *
  */
-function insertLotToDB($connection, $lot) {
+function insertLotToDB($connection, $lot)
+{
     $sql = 'INSERT INTO lots
     (`date_created`, `title`, `category_id`, `description`, `start_price`,
     `step_price`, `date_exp`, `image`, `author_id`)

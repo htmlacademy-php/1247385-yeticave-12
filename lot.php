@@ -10,7 +10,8 @@ require_once 'db.php';
  *
  * @return integer Целое число
  */
-function getIdFromRequest($param) {
+function getIdFromRequest($param)
+{
     if (isset($param)) {
         $id = intval($param);
     } else {
@@ -27,7 +28,8 @@ function getIdFromRequest($param) {
  *
  * @return string|null Текст ошибки, если условия не выполнены, или null, если ошибок не было
  */
-function validateUserRate($value, $minPrice) {
+function validateUserRate($value, $minPrice)
+{
     if (empty($value)) {
         $error = 'Поле не может быть пустым';
     } else {
@@ -45,12 +47,13 @@ function validateUserRate($value, $minPrice) {
  *
  * @return array Массив с данными запрашиваемого лота, или код ответа 404, если лот не найден в БД
  */
-function getLotFromDb($connection) {
+function getLotFromDb($connection)
+{
     $sqlSelectLot = 'SELECT lots.id as id, lots.title as title, lots.description as description,
        `start_price` as price, `image` as url, `date_exp` as expiration,
        `step_price` as step, `author_id`, categories.title as category FROM lots '
-            . 'JOIN `categories` ON categories.id = `category_id` '
-            . 'WHERE lots.id=' . getIdFromRequest($_GET['id']);
+        . 'JOIN `categories` ON categories.id = `category_id` '
+        . 'WHERE lots.id=' . getIdFromRequest($_GET['id']);
 
     $result = mysqli_query($connection, $sqlSelectLot);
 
@@ -75,7 +78,8 @@ function getLotFromDb($connection) {
  *
  * @return integer Максимальная ставка для лота (если есть)
  */
-function getMaxBet($connection, $lot) {
+function getMaxBet($connection, $lot)
+{
     $id = $lot['id'];
 
     $sql = 'SELECT MAX(`price`) as max_bet FROM bets '
@@ -97,7 +101,8 @@ function getMaxBet($connection, $lot) {
  *
  * @return array Дополненный минимальной ставкой массив с данными лота
  */
-function calculateMinBet($currentLot) {
+function calculateMinBet($currentLot)
+{
     $minBet = $currentLot['currentPrice'] + $currentLot['step'];
     $currentLot['minBet'] = $minBet;
 
@@ -114,7 +119,8 @@ function calculateMinBet($currentLot) {
  *
  * @return array Обновленный массив с данными лота, содержащий текущую цену и минимальную ставку
  */
-function updateLotBets($connection, $lot) {
+function updateLotBets($connection, $lot)
+{
     $maxBet = getMaxBet($connection, $lot);
 
     if (!empty($maxBet)) {
@@ -137,7 +143,8 @@ function updateLotBets($connection, $lot) {
  * @param mysqli $connection Ресурс соединения
  *
  */
-function insertBetToDb($rate, $userId, $lot, $connection) {
+function insertBetToDb($rate, $userId, $lot, $connection)
+{
     $bet = [
         'price' => intval($rate),
         'user_id' => $userId,
@@ -161,7 +168,8 @@ function insertBetToDb($rate, $userId, $lot, $connection) {
  *
  * @return array Массив с данными ставок
  */
-function getBetsHistory($connection, $lot) {
+function getBetsHistory($connection, $lot)
+{
     $sql = 'SELECT bets.date_created, `price`, bets.user_id, bets.lot_id, users.name FROM bets '
         . 'JOIN `users` ON users.id = `user_id` '
         . 'WHERE bets.lot_id=' . $lot['id']
@@ -169,7 +177,7 @@ function getBetsHistory($connection, $lot) {
 
     $result = mysqli_query($connection, $sql);
 
-    if ($result && mysqli_num_rows($result) !==0) {
+    if ($result && mysqli_num_rows($result) !== 0) {
         $history = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         // выводим дату ставки в человекопонятном формате
@@ -193,7 +201,8 @@ function getBetsHistory($connection, $lot) {
  *
  * @return boolean true если форму можно показать, false если форма не должна отображаться
  */
-function checkFormVisibility($lot, $history, $userId) {
+function checkFormVisibility($lot, $history, $userId)
+{
     $isVisible = checkLotDateActual($lot['expiration']);
 
     if ($userId === $lot['author_id'] || $history[0]['user_id'] === $userId) {
@@ -215,7 +224,8 @@ function checkFormVisibility($lot, $history, $userId) {
  *
  * @return string Итоговый HTML
  */
-function setTemplateData($lot, $isAuth, $error, $history, $userId) {
+function setTemplateData($lot, $isAuth, $error, $history, $userId)
+{
     if (http_response_code() === 200) {
         $content = include_template('/lot.php', [
             'lot' => $lot,

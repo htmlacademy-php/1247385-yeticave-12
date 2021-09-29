@@ -11,7 +11,8 @@ require_once 'db.php';
  *
  * @return string Поисковый запрос, дополненный символом * для каждого слова
  */
-function prepareSearchQuery($enteredSearchText) {
+function prepareSearchQuery($enteredSearchText)
+{
     $searchWords = explode(' ', $enteredSearchText);
 
     $search = '';
@@ -37,7 +38,8 @@ function prepareSearchQuery($enteredSearchText) {
  * @return array Массив с данными для отрисовки лотов по выбранной категории,
  * или пустой массив с сообщением что лотов не найдено
  */
-function searchForMatches($connection, $search, $templateData) {
+function searchForMatches($connection, $search, $templateData)
+{
     $sql = 'SELECT lots.id as id, lots.title as title, lots.description as description,
        `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '
         . 'JOIN `categories` ON categories.id = `category_id` '

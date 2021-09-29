@@ -20,7 +20,8 @@ $extraCss = '<link href="../css/flatpickr.min.css" rel="stylesheet">';
 /**
  * Показывает ошибку подключения, если ресурс соединения недоступен
  */
-function showConnectionError() {
+function showConnectionError()
+{
     print('Ошибка подключения: ' . mysqli_connect_error());
 }
 
@@ -33,7 +34,8 @@ function showConnectionError() {
  *
  * @return array Двумерный массив данных, выбранных на основе $sql или пустой массив, если ничего не нашлось
  */
-function getDataFromDB($connection, $sql) {
+function getDataFromDB($connection, $sql)
+{
     if ($connection) {
         $result = mysqli_query($connection, $sql);
 

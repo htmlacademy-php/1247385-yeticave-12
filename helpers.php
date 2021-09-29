@@ -13,7 +13,8 @@
  *
  * @return bool true при совпадении с форматом 'ГГГГ-ММ-ДД', иначе false
  */
-function is_date_valid(string $date) : bool {
+function is_date_valid(string $date): bool
+{
     $format_to_check = 'Y-m-d';
     $dateTimeObj = date_create_from_format($format_to_check, $date);
 
@@ -29,7 +30,8 @@ function is_date_valid(string $date) : bool {
  *
  * @return mysqli_stmt Подготовленное выражение
  */
-function db_get_prepare_stmt($link, $sql, $data = []) {
+function db_get_prepare_stmt($link, $sql, $data = [])
+{
     $stmt = mysqli_prepare($link, $sql);
 
     if ($stmt === false) {
@@ -46,12 +48,14 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
 
             if (is_int($value)) {
                 $type = 'i';
-            }
-            else if (is_string($value)) {
-                $type = 's';
-            }
-            else if (is_double($value)) {
-                $type = 'd';
+            } else {
+                if (is_string($value)) {
+                    $type = 's';
+                } else {
+                    if (is_double($value)) {
+                        $type = 'd';
+                    }
+                }
             }
 
             if ($type) {
@@ -96,9 +100,9 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
  *
  * @return string Рассчитанная форма множественнго числа
  */
-function get_noun_plural_form (int $number, string $one, string $two, string $many): string
+function get_noun_plural_form(int $number, string $one, string $two, string $many): string
 {
-    $number = (int) $number;
+    $number = (int)$number;
     $mod10 = $number % 10;
     $mod100 = $number % 100;
 
@@ -127,7 +131,8 @@ function get_noun_plural_form (int $number, string $one, string $two, string $ma
  *
  * @return string Итоговый HTML
  */
-function include_template($name, array $data = []) {
+function include_template($name, array $data = [])
+{
     $name = 'templates/' . $name;
     $result = '';
 
@@ -150,7 +155,8 @@ function include_template($name, array $data = []) {
  *
  * @return string Итоговый HTML
  */
-function includeScripts() {
+function includeScripts()
+{
     $scripts = [
         'flatpickr.js',
         'script.js'
@@ -173,7 +179,8 @@ function includeScripts() {
  *
  * @return string Отформатированная сумма со знаком рубля
  */
-function formatPrice(int $rawPrice) {
+function formatPrice(int $rawPrice)
+{
     $actualPrice = ceil($rawPrice);
 
     if ($actualPrice >= 1000) {
@@ -192,7 +199,8 @@ function formatPrice(int $rawPrice) {
  *
  * @return array Массив из трех элементов [часы, минуты, секунды]
  */
-function getExpirationDate(string $date) {
+function getExpirationDate(string $date)
+{
     $currentDate = strtotime('now');
     $expiryDate = strtotime($date);
 
@@ -202,7 +210,7 @@ function getExpirationDate(string $date) {
     $diff = $diff % 3600;
 
     $minutes = str_pad(floor($diff / 60), 2, "0", STR_PAD_LEFT);
-    $seconds = str_pad(floor($diff %  60), 2, "0", STR_PAD_LEFT);
+    $seconds = str_pad(floor($diff % 60), 2, "0", STR_PAD_LEFT);
 
     return [$hours, $minutes, $seconds];
 }
@@ -215,7 +223,8 @@ function getExpirationDate(string $date) {
  *
  * @return array Дополненный исходный массив
  */
-function createDetailProducts(array $products) {
+function createDetailProducts(array $products)
+{
     $detailProducts = [];
 
     foreach ($products as $product) {
@@ -238,7 +247,8 @@ function createDetailProducts(array $products) {
  *
  * @return string Сохраненное значение, введенное пользователем в поле с атрибутом $name
  */
-function getPostVal($name) {
+function getPostVal($name)
+{
     return filter_input(INPUT_POST, $name);
 }
 
@@ -250,7 +260,8 @@ function getPostVal($name) {
  *
  * @return string|null Текст ошибки, если такой категории нет
  */
-function validateCategory($id, $categoriesIds) {
+function validateCategory($id, $categoriesIds)
+{
     if (!in_array($id, $categoriesIds)) {
         return 'Выберите категорию из списка';
     }
@@ -267,7 +278,8 @@ function validateCategory($id, $categoriesIds) {
  *
  * @return string|null Текст ошибки, если длина поля выходит за заданные ограничения
  */
-function validateLength(string $value, int $min, int $max) {
+function validateLength(string $value, int $min, int $max)
+{
     if ($value) {
         $len = strlen($value);
         if ($len < $min || $len > $max) {
@@ -286,7 +298,8 @@ function validateLength(string $value, int $min, int $max) {
  *
  * @return string|null Текст ошибки, если пользователь уже зарегистрирован
  */
-function checkEmailExists($value, $connection) {
+function checkEmailExists($value, $connection)
+{
     $email = mysqli_real_escape_string($connection, $value);
     $sql = "SELECT `id` FROM users WHERE email= '$email'";
     $result = mysqli_query($connection, $sql);
@@ -308,10 +321,11 @@ function checkEmailExists($value, $connection) {
  * @return string|null Текст ошибки, если введен некорректный email,
  * или если пользователь уже зарегистрирован на сайте
  */
-function validateEmailWithDB($value, $connection) {
+function validateEmailWithDB($value, $connection)
+{
     $email = filter_var($value, FILTER_VALIDATE_EMAIL);
 
-    if($email) {
+    if ($email) {
         return checkEmailExists($email, $connection);
     } else {
         return "Введите корректный email";
@@ -327,7 +341,8 @@ function validateEmailWithDB($value, $connection) {
  *
  * @return string|null Текст ошибки, если введен некорректный email
  */
-function validateEmail($value) {
+function validateEmail($value)
+{
     $email = filter_var($value, FILTER_VALIDATE_EMAIL);
 
     if (!$email) {
@@ -342,10 +357,11 @@ function validateEmail($value) {
  *
  * @return string|null Текст ошибки, если введенное значение цены меньше или равна нулю
  */
-function validatePrice($value) {
+function validatePrice($value)
+{
     $step = filter_var($value, FILTER_VALIDATE_FLOAT);
 
-    if(!$step || $step <=0) {
+    if (!$step || $step <= 0) {
         return "Начальная цена должна быть числом больше ноля";
     }
 
@@ -360,11 +376,12 @@ function validatePrice($value) {
  *
  * @return string|null Текст ошибки, если введенное значение меньше $minRange
  */
-function validatePriceStep($value, $minRange = 1) {
+function validatePriceStep($value, $minRange = 1)
+{
     $options = ['options' => ['min_range' => $minRange]];
     $step = filter_var($value, FILTER_VALIDATE_INT, $options);
 
-    if(!$step) {
+    if (!$step) {
         return "Введите целое число больше или равно $minRange";
     }
 
@@ -378,17 +395,18 @@ function validatePriceStep($value, $minRange = 1) {
  *
  * @return string|null Текст ошибки, если дата не соответствует формату
  */
-function validateDate($date) {
+function validateDate($date)
+{
     $currentDate = strtotime('now');
     $expiryDate = strtotime($date);
 
     $diff = ($expiryDate - $currentDate) / 86400;
 
-    if(!is_date_valid($date)) {
+    if (!is_date_valid($date)) {
         return "Введите корректную дату в формате ГГГГ-ММ-ДД";
     }
 
-    if($diff < 1) {
+    if ($diff < 1) {
         return "Дата окончания торгов должна быть больше текущей даты, хотя бы на один день";
     }
 
@@ -400,7 +418,8 @@ function validateDate($date) {
  *
  * @return string|null Текст ошибки, если изображение не соответствует формату
  */
-function validateImg() {
+function validateImg()
+{
     if (!empty($_FILES['lot-img']['name'])) {
         $mimeTypes = ['image/png', 'image/jpeg'];
 
@@ -423,7 +442,8 @@ function validateImg() {
  *
  * @return string Путь до сохраненного изображения
  */
-function getImageUrl() {
+function getImageUrl()
+{
     $fileName = $_FILES['lot-img']['name'];
     $tmpName = $_FILES['lot-img']['tmp_name'];
     $filePath = __DIR__ . '/uploads/';
@@ -440,7 +460,8 @@ function getImageUrl() {
  * предупреждение о необходимости зарегистрироваться со ссылками на страницу
  * регистрации и входа
  */
-function loginRequired() {
+function loginRequired()
+{
     if (empty($_SESSION['user'])) {
         http_response_code(403);
         echo '<h1>Error 403</h1>
@@ -456,7 +477,8 @@ function loginRequired() {
  * предупреждение что пользователь уже зарегистрирован со ссылкой на страницу
  * выхода из аккаунта
  */
-function alreadyRegisteredUser() {
+function alreadyRegisteredUser()
+{
     if (!empty($_SESSION['user'])) {
         http_response_code(403);
         echo '<h1>Error 403</h1>
@@ -474,7 +496,8 @@ function alreadyRegisteredUser() {
  *
  * @return boolean true, если лот действующий, и false если срок лота истек
  */
-function checkLotDateActual($date) {
+function checkLotDateActual($date)
+{
     $currentDate = strtotime('now');
     $expiryDate = strtotime($date);
 
@@ -494,7 +517,8 @@ function checkLotDateActual($date) {
  *
  * @return array Исходный массив, дополненный датой в человекопонятном формате
  */
-function convertHistoryDates(array $history) {
+function convertHistoryDates(array $history)
+{
     $detailHistory = [];
 
     foreach ($history as $unit) {
@@ -515,7 +539,7 @@ function convertHistoryDates(array $history) {
             case ($hours >= 1 && $hours < 24):
                 $unit['detailDate'] = $hours . ' ' . get_noun_plural_form($hours,
                         'час', 'часа', 'часов') . ' '
-                        . $minutes . ' ' . get_noun_plural_form($minutes,
+                    . $minutes . ' ' . get_noun_plural_form($minutes,
                         'минута', 'минуты', 'минут') . ' назад';
                 break;
             case ($hours >= 24 && $hours < 48):
@@ -538,7 +562,8 @@ function convertHistoryDates(array $history) {
  *
  * @return string Корректный URL, используемый для перехода на нужную страницу
  */
-function setUrlPath($value) {
+function setUrlPath($value)
+{
     $params = $_GET;
     $page = intval($value);
     $params['page'] = $page;
@@ -555,7 +580,8 @@ function setUrlPath($value) {
  * @return array Массив из лотов, разбитых с учетом пагинации,
  * и шаблон с номерами страниц и оформлением с уже переданными данными для отрисовки
  */
-function createPagination($lots) {
+function createPagination($lots)
+{
     $itemsCount = count($lots); // количество найденных в БД лотов
 
     $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;

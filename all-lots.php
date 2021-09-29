@@ -17,7 +17,8 @@ $templateData = [];
  *
  * @return string Безопасное значение кода категории для запроса в БД
  */
-function checkRequest($param, $categories, $connection) {
+function checkRequest($param, $categories, $connection)
+{
     $categoriesCodes = array_column($categories, 'code');
 
     if (isset($param) && in_array($param, $categoriesCodes)) {
@@ -39,7 +40,8 @@ function checkRequest($param, $categories, $connection) {
  *
  * @return string Название категории в человекопонятном виде для вывода в шаблоне
  */
-function getCategoryTitle($categories, $code) {
+function getCategoryTitle($categories, $code)
+{
     foreach ($categories as $item) {
         if ($item['code'] === $code) {
             $categoryTitle = $item['title'];
@@ -61,7 +63,8 @@ function getCategoryTitle($categories, $code) {
  * @return array Массив с данными для отрисовки лотов по выбранной категории,
  * или пустой массив с сообщением что лотов не найдено
  */
-function searchForMatches($connection, $categories, $templateData) {
+function searchForMatches($connection, $categories, $templateData)
+{
     $category = checkRequest($_GET['category'], $categories, $connection);
 
     $sql = 'SELECT lots.id as id, lots.title as title, lots.description as description,
@@ -98,7 +101,8 @@ function searchForMatches($connection, $categories, $templateData) {
  *
  * @return string Имя шаблона для отображения на странице
  */
-function setTemplateName() {
+function setTemplateName()
+{
     if (http_response_code() === 200) {
         $templateName = '/all-lots.php';
     } else {
