@@ -4,9 +4,16 @@ require_once 'db.php';
 
 loginRequired();
 
-$categoriesIds = array_column($categories, 'id');
+/**
+ * Валидирует форму добавления лота - проверяет поля на заполненность, а также на заданные по каждому полю условия,
+ * и возвращает текст ошибок в зависимости от нарушенных условий, или null, если валидация прошла успешно
+ * @param array $categories Массив с имеющимися в БД категориями
+ *
+ * @return string|null Текст ошибок, если условия не выполнены, или null, если ошибок не было
+ */
+function validateInputFields($categories) {
+    $categoriesIds = array_column($categories, 'id');
 
-function validateInputFields($categoriesIds) {
     $required = ['lot-name', 'category', 'message', 'lot-img', 'lot-rate', 'lot-step', 'lot-date'];
     $errors = [];
 
@@ -51,13 +58,14 @@ function validateInputFields($categoriesIds) {
     return $errors;
 }
 
-function getUserID($isAuth) {
-    if ($isAuth) {
-        $userId = $_SESSION['user']['id'];
-    }
-    return $userId;
-}
-
+/**
+ * Записывает лот в таблицу lots, и осуществляет перенаправление пользователя
+ * на страницу созданного лота в случае успешного добавления в БД
+ *
+ * @param mysqli $connection Ресурс соединения
+ * @param array $lot Массив с данными лота, введенными пользователем в форме добавления лота
+ *
+ */
 function insertLotToDB($connection, $lot) {
     $sql = 'INSERT INTO lots
     (`date_created`, `title`, `category_id`, `description`, `start_price`,
@@ -74,7 +82,7 @@ function insertLotToDB($connection, $lot) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $errors = validateInputFields($categoriesIds);
+    $errors = validateInputFields($categories);
 
     if (!empty($errors)) {
         $page_content = include_template('/add.php', [
@@ -85,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lot = $_POST;
         $lot['lot-img'] = getImageUrl();
 
-        $lot['author_id'] = getUserID($isAuth);
+        $lot['author_id'] = $userId;
 
         insertLotToDB($connection, $lot);
     }

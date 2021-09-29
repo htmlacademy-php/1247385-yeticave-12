@@ -2,6 +2,15 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
+/**
+ * Подготавливает поисковый запрос, введенный пользователем, для поиска в БД
+ * в логическом режиме полнотекстового поиска -
+ * добавляет плейсхолдер * в конце каждого слова, чтобы искать не только по
+ * строгому соответствию, но и по совпадениям
+ * @param string $enteredSearchText Поисковый запрос, введенный пользователем
+ *
+ * @return string Поисковый запрос, дополненный символом * для каждого слова
+ */
 function prepareSearchQuery($enteredSearchText) {
     $searchWords = explode(' ', $enteredSearchText);
 
@@ -16,6 +25,18 @@ function prepareSearchQuery($enteredSearchText) {
     return $search;
 }
 
+/**
+ * Выбирает в БД лоты, соответствующие поисковому запросу, переданному в $_GET,
+ * и если находит такие лоты, возвращает массив с их данными для отрисовки в шаблоне.
+ * Если по поисковому запросу в БД ничего не нашлось, возвращает массив, содержащий сообщение об отсутствии лотов
+ *
+ * @param mysqli $connection Ресурс соединения
+ * @param string $search Поисковый запрос от пользователя
+ * @param array $templateData Массив для записи в шаблон результата поиска лотов
+ *
+ * @return array Массив с данными для отрисовки лотов по выбранной категории,
+ * или пустой массив с сообщением что лотов не найдено
+ */
 function searchForMatches($connection, $search, $templateData) {
     $sql = 'SELECT lots.id as id, lots.title as title, lots.description as description,
        `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '

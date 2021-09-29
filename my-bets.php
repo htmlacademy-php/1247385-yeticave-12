@@ -2,7 +2,14 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-// пробуем поискать все свои ставки
+/**
+ * Ищет в таблице bets все ставки, сделанные авторизованным пользователем
+ * @param mysqli $connection Ресурс соединения
+ * @param integer $userId Id авторизованного пользователя
+ *
+ * @return array Массив с данными всех ставок текущего пользователя,
+ * или пустой массив, если пользователь не делал ставок
+ */
 function getMyBetsHistory($connection, $userId) {
     $sql = 'SELECT bets.date_created, `price`, users.name, bets.lot_id,
             lots.title as title, `image` as url, `step_price`, `date_exp` as expiration,
@@ -30,7 +37,21 @@ function getMyBetsHistory($connection, $userId) {
     return $history;
 }
 
-// если ставки были сделаны, проверяем, побеждали ли мы
+
+/**
+ * Если ставки были сделаны авторизованным пользователем, проверяет, побеждал ли он?
+ * Для каждого лота из найденного массива со ставками находит id пользователя,
+ * сделавшего последнюю ставку, и записывает в элемент ['state'] итогового массива с историей ставок:
+ * если найденный id совпадает с id авторизованного пользователя, state='win';
+ * если id не совпадает - state = 'end'.
+ * Возвращает массив с историей ставок, дополненых информацией о победителе,
+ * или пустой массив, если пользователь еще не делал ставок
+ * @param mysqli $connection Ресурс соединения
+ * @param integer $userId Id авторизованного пользователя
+ *
+ * @return array Массив с данными всех ставок текущего пользователя,
+ * или пустой массив, если пользователь не делал ставок
+ */
 function searchForWinners($connection, $userId) {
     $history = getMyBetsHistory($connection, $userId);
 

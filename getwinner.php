@@ -3,7 +3,14 @@ require_once 'db.php';
 require_once 'helpers.php';
 require_once 'vendor/autoload.php';
 
-// выбираем все лоты без победителей
+/**
+ * Выбирает все лоты без победителей
+ * с датой окончания действия лота меньше или равной текущей дате
+ * и возвращает массив, состоящий из id найденных лотов
+ * @param mysqli $connection Ресурс соединения
+ *
+ * @return array Массив с данными лотов без победителей
+ */
 function getLotsWithoutWinners($connection) {
     $sql = 'SELECT lots.id FROM lots '
         . 'WHERE `date_exp` <= NOW() AND `winner_id` IS NULL';
@@ -13,7 +20,11 @@ function getLotsWithoutWinners($connection) {
     return $lotsWithoutWinners;
 }
 
-// отправляем победителю письмо с поздравлением
+/**
+ * Отправляет победителю письмо с поздравлением
+ * @param array $winner Массив, содержащий информацию о лоте, и победителе
+ *
+ */
 function sendEmailToWinner($winner) {
     // Create the Transport
     $transport = (new Swift_SmtpTransport('smtp.mailtrap.io', 2525))
@@ -44,7 +55,17 @@ function sendEmailToWinner($winner) {
     $mailer->send($message);
 }
 
-// определяем победителя для найденных лотов
+
+/**
+ * Определяет победителя для каждого из найденных лотов,
+ * и в случае если на лот были сделаны ставки, отправляет победителю письмо с поздравлением,
+ * и обновляет лот в БД, добавляя ему winner_id - id пользователя, сделавшего последнюю ставку.
+ * Если ставок на лот не было, лот в БД все равно обновляется, чтобы потом не искать его в БД повторно -
+ * ему задается winner_id = 0.
+ * @param mysqli $connection Ресурс соединения
+ *
+ * @return array Массив с данными лотов без победителей
+ */
 function determineTheWinner($connection) {
     $lotsWithoutWinners = getLotsWithoutWinners($connection);
 

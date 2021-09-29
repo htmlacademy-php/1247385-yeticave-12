@@ -2,7 +2,14 @@
 require_once 'helpers.php';
 require_once 'db.php';
 
-// подготавливаем параметр для запроса в БД
+/**
+ * Подготавливает параметр для запроса в БД
+ * Если параметр передан, он преобразуется к целому числу,
+ * а если нет, возвращается код ответа 404
+ * @param string $param Параметр, переданный в $_GET
+ *
+ * @return integer Целое число
+ */
 function getIdFromRequest($param) {
     if (isset($param)) {
         $id = intval($param);
@@ -12,7 +19,14 @@ function getIdFromRequest($param) {
     return $id;
 }
 
-// валидируем ставку
+
+/**
+ * Валидирует ставку - проверяет поле ставки на заполненность, а также на минимальное значение,
+ * и возвращает текст ошибки в зависимости от нарушенного условия, или null, если валидация прошла успешно
+ * @param string $value Значение ставки, введенное пользователем и переданное в $_POST
+ *
+ * @return string|null Текст ошибки, если условия не выполнены, или null, если ошибок не было
+ */
 function validateUserRate($value, $minPrice) {
     if (empty($value)) {
         $error = 'Поле не может быть пустым';
@@ -23,7 +37,14 @@ function validateUserRate($value, $minPrice) {
     return $error;
 }
 
-//  достаем лот из БД
+
+/**
+ * Достает лот из БД по id, переданному в $_GET, и возвращает одномерный массив с данными лота,
+ * или код ответа 404, если такого лота в БД нет
+ * @param mysqli $connection Ресурс соединения
+ *
+ * @return array Массив с данными запрашиваемого лота, или код ответа 404, если лот не найден в БД
+ */
 function getLotFromDb($connection) {
     $sqlSelectLot = 'SELECT lots.id as id, lots.title as title, lots.description as description,
        `start_price` as price, `image` as url, `date_exp` as expiration,
@@ -46,6 +67,14 @@ function getLotFromDb($connection) {
     return $currentLot;
 }
 
+/**
+ * Определяет максимальную ставку для текущего лота по таблице ставок,
+ * и возвращает ее в случае, если на этот лот ставки были
+ * @param mysqli $connection Ресурс соединения
+ * @param array $lot Массив с данными лота
+ *
+ * @return integer Максимальная ставка для лота (если есть)
+ */
 function getMaxBet($connection, $lot) {
     $id = $lot['id'];
 
@@ -60,7 +89,14 @@ function getMaxBet($connection, $lot) {
     return $maxBet['max_bet'];
 }
 
-
+/**
+ * Вычислят минимальную ставку для текущего лота из рачета
+ * минимальная ставка = текущая цена лота + шаг ставки
+ * и возвращает дополненный массив лота, содержащий ее значение
+ * @param array $currentLot Массив с данными лота
+ *
+ * @return array Дополненный минимальной ставкой массив с данными лота
+ */
 function calculateMinBet($currentLot) {
     $minBet = $currentLot['currentPrice'] + $currentLot['step'];
     $currentLot['minBet'] = $minBet;
@@ -68,6 +104,16 @@ function calculateMinBet($currentLot) {
     return $currentLot;
 }
 
+/**
+ * Обновляет значения ставок -
+ * определяет текущее значение цены, сверяясь с таблицей ставок,
+ * и если ставки делались, текущее значение цены будет скорректировано.
+ * После определения текущей цены это значение используется для вычисления минимального значения ставки
+ * @param mysqli $connection Ресурс соединения
+ * @param array $lot Массив с данными лота
+ *
+ * @return array Обновленный массив с данными лота, содержащий текущую цену и минимальную ставку
+ */
 function updateLotBets($connection, $lot) {
     $maxBet = getMaxBet($connection, $lot);
 
@@ -82,6 +128,15 @@ function updateLotBets($connection, $lot) {
     return $lot;
 }
 
+/**
+ * Записывает ставку пользователя в таблицу ставок bets
+ *
+ * @param string $rate Значение ставки, переданное в $_POST
+ * @param integer $userId Id авторизованного пользователя, сделавшего ставку
+ * @param array $lot Массив с данными лота (используется для определения Id лота)
+ * @param mysqli $connection Ресурс соединения
+ *
+ */
 function insertBetToDb($rate, $userId, $lot, $connection) {
     $bet = [
         'price' => intval($rate),
@@ -95,9 +150,17 @@ function insertBetToDb($rate, $userId, $lot, $connection) {
 
     $stmt = db_get_prepare_stmt($connection, $sql, $bet);
     mysqli_stmt_execute($stmt);
-
 }
 
+/**
+ * Ищет в таблице ставок ставки для текущего лота, и если находит,
+ * возвращает их в виде массива, дополненного информацией о дате ставки в человекопонятном формате.
+ * Если ставок не было, возвращает пустой массив
+ * @param mysqli $connection Ресурс соединения
+ * @param array $lot Массив с данными лота
+ *
+ * @return array Массив с данными ставок
+ */
 function getBetsHistory($connection, $lot) {
     $sql = 'SELECT bets.date_created, `price`, bets.user_id, bets.lot_id, users.name FROM bets '
         . 'JOIN `users` ON users.id = `user_id` '
@@ -118,6 +181,18 @@ function getBetsHistory($connection, $lot) {
     return $history;
 }
 
+/**
+ * Определяет, нужно ли показывать форму с полем для ввода ставки.
+ * Форма не показывается, если:
+ * - срок действия лота истек,
+ * - лот создан авторизованным пользователем,
+ * - последняя ставка для лота сделана авторизованным пользователем.
+ * @param array $lot Массив с данными лота
+ * @param array $history Массив с данными ставок для текущего лота
+ * @param integer $userId Id авторизованного пользователя
+ *
+ * @return boolean true если форму можно показать, false если форма не должна отображаться
+ */
 function checkFormVisibility($lot, $history, $userId) {
     $isVisible = checkLotDateActual($lot['expiration']);
 
@@ -127,7 +202,19 @@ function checkFormVisibility($lot, $history, $userId) {
     return $isVisible;
 }
 
-// показываем шаблон в зависимости от наличия лота в БД
+
+/**
+ * Показывает шаблон в зависимости от наличия лота в БД, ориентируясь на код ответа.
+ * Если код ответа 200, генерирует шаблон для отображения лота, и передает ему все нужные для отрисовки данные.
+ * Во всех остальных случаях генерирует шаблон для страницы 404
+ * @param array $lot Массив с данными лота
+ * @param boolean $isAuth true если пользователь авторизован
+ * @param string $error Текст ошибок валидации формы ввода ставки
+ * @param array $history Массив с данными ставок для текущего лота
+ * @param integer $userId Id авторизованного пользователя
+ *
+ * @return string Итоговый HTML
+ */
 function setTemplateData($lot, $isAuth, $error, $history, $userId) {
     if (http_response_code() === 200) {
         $content = include_template('/lot.php', [

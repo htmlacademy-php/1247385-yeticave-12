@@ -4,6 +4,14 @@ require_once 'db.php';
 
 alreadyRegisteredUser();
 
+/**
+ * Валидирует данные для регистрации пользователя -
+ * проверяет все поля на заполненность, а также на соответствие заданным условиям,
+ * и возвращает текст ошибки в зависимости от нарушенного условия, или null, если валидация прошла успешно
+ * @param mysqli $connection Ресурс соединения
+ *
+ * @return array Массив с ошибками, если условия не выполнены, или пустой массив, если ошибок не было
+ */
 function validateInputFields($connection) {
     $required = ['email', 'password', 'name', 'message'];
     $errors = [];
@@ -39,6 +47,13 @@ function validateInputFields($connection) {
     return $errors;
 }
 
+/**
+ * Принимает массив с данными пользователя,
+ * хеширует его пароль для хранения в БД, и возвращает обратно
+ * @param array $user Массив с данными пользователя
+ *
+ * @return array Обновленный массив с данными пользователя, содержащий хеш его пароля
+ */
 function createHashPassword($user) {
     $password = password_hash($user['password'], PASSWORD_DEFAULT);
 
@@ -47,6 +62,13 @@ function createHashPassword($user) {
     return $user;
 }
 
+/**
+ * Записывает пользователя в БД, и если запись прошла успешно -
+ * выполняет его переадресацию на страницу login для входа на сайт
+ * @param mysqli $connection Ресурс соединения
+ * @param array $user Массив с данными пользователя для записи в БД
+ *
+ */
 function insertUserToDB($connection, $user) {
     $userForDB = createHashPassword($user);
 
@@ -60,9 +82,6 @@ function insertUserToDB($connection, $user) {
     if ($result) {
         header('Location: /login.php');
         exit();
-    } else {
-        $error = mysqli_error($connection);
-        print("Ошибка MySQL: " . $error);
     }
 }
 

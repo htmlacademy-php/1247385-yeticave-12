@@ -31,7 +31,7 @@ function showConnectionError() {
  * @param mysqli $connection Ресурс соединения
  * @param string $sql SQL-запрос на выборку данных из БД
  *
- * @return array Возвращает двумерный массив данных, выбранных на основе $sql или пустой массив, если ничего не нашлось
+ * @return array Двумерный массив данных, выбранных на основе $sql или пустой массив, если ничего не нашлось
  */
 function getDataFromDB($connection, $sql) {
     if ($connection) {
@@ -47,6 +47,7 @@ function getDataFromDB($connection, $sql) {
     }
     return $data;
 }
+
 
 // массив с категориями, используется на всех страницах
 $sqlCategories = 'SELECT categories.id as id, `code`, `title` FROM categories';

@@ -248,7 +248,7 @@ function getPostVal($name) {
  * @param integer $id ID выбранной пользователем категории
  * @param array $categoriesIds Массив с ID категорий, имеющихся на сайте
  *
- * @return string|null Возвращает текст ошибки, если такой категории нет
+ * @return string|null Текст ошибки, если такой категории нет
  */
 function validateCategory($id, $categoriesIds) {
     if (!in_array($id, $categoriesIds)) {
@@ -265,7 +265,7 @@ function validateCategory($id, $categoriesIds) {
  * @param integer $min Требуемое минимальное количество символов
  * @param integer $max Требуемое максимальное количество символов
  *
- * @return string|null Возвращает текст ошибки, если длина поля выходит за заданные ограничения
+ * @return string|null Текст ошибки, если длина поля выходит за заданные ограничения
  */
 function validateLength(string $value, int $min, int $max) {
     if ($value) {
@@ -284,7 +284,7 @@ function validateLength(string $value, int $min, int $max) {
  * @param string $value Значение email, введенное пользователем
  * @param mysqli $connection Ресурс соединения
  *
- * @return string|null Возвращает текст ошибки, если пользователь уже зарегистрирован
+ * @return string|null Текст ошибки, если пользователь уже зарегистрирован
  */
 function checkEmailExists($value, $connection) {
     $email = mysqli_real_escape_string($connection, $value);
@@ -305,7 +305,7 @@ function checkEmailExists($value, $connection) {
  * @param string $value Значение email, введенное пользователем
  * @param mysqli $connection Ресурс соединения
  *
- * @return string|null Возвращает текст ошибки, если введен некорректный email,
+ * @return string|null Текст ошибки, если введен некорректный email,
  * или если пользователь уже зарегистрирован на сайте
  */
 function validateEmailWithDB($value, $connection) {
@@ -325,7 +325,7 @@ function validateEmailWithDB($value, $connection) {
  *
  * @param string $value Значение email, введенное пользователем
  *
- * @return string|null Возвращает текст ошибки, если введен некорректный email
+ * @return string|null Текст ошибки, если введен некорректный email
  */
 function validateEmail($value) {
     $email = filter_var($value, FILTER_VALIDATE_EMAIL);
@@ -340,7 +340,7 @@ function validateEmail($value) {
  *
  * @param float $value Значение, введенное пользователем
  *
- * @return string|null Возвращает текст ошибки, если введенное значение цены меньше или равна нулю
+ * @return string|null Текст ошибки, если введенное значение цены меньше или равна нулю
  */
 function validatePrice($value) {
     $step = filter_var($value, FILTER_VALIDATE_FLOAT);
@@ -358,7 +358,7 @@ function validatePrice($value) {
  * @param integer $value Значение, введенное пользователем
  * @param integer $minRange Требуемое минимальное значение, по умолчанию шаг не может быть меньше 1
  *
- * @return string|null Возвращает текст ошибки, если введенное значение меньше $minRange
+ * @return string|null Текст ошибки, если введенное значение меньше $minRange
  */
 function validatePriceStep($value, $minRange = 1) {
     $options = ['options' => ['min_range' => $minRange]];
@@ -376,7 +376,7 @@ function validatePriceStep($value, $minRange = 1) {
  * а также больше текущей даты хотя бы на 1 день
  * @param string $date Значение даты, введенное пользователем
  *
- * @return string|null Возвращает текст ошибки, если дата не соответствует формату
+ * @return string|null Текст ошибки, если дата не соответствует формату
  */
 function validateDate($date) {
     $currentDate = strtotime('now');
@@ -398,7 +398,7 @@ function validateDate($date) {
 /**
  * Проверяет что пользователь загрузил изображение в одном из форматов jpg/jpeg/png
  *
- * @return string|null Возвращает текст ошибки, если изображение не соответствует формату
+ * @return string|null Текст ошибки, если изображение не соответствует формату
  */
 function validateImg() {
     if (!empty($_FILES['lot-img']['name'])) {
@@ -421,7 +421,7 @@ function validateImg() {
 /**
  * Сохраняет изображение в папку uploads и возвращает путь до него на сервере
  *
- * @return string Возвращает путь до сохраненного изображения
+ * @return string Путь до сохраненного изображения
  */
 function getImageUrl() {
     $fileName = $_FILES['lot-img']['name'];
@@ -472,7 +472,7 @@ function alreadyRegisteredUser() {
  * Если дата окончания больше текущей, лот действующий, вернется true
  * @param string $date Дата окончания лота
  *
- * @return boolean Возвращает true, если лот действующий, и false если срок лота истек
+ * @return boolean true, если лот действующий, и false если срок лота истек
  */
 function checkLotDateActual($date) {
     $currentDate = strtotime('now');
@@ -492,7 +492,7 @@ function checkLotDateActual($date) {
  * с помощью функции get_noun_plural_form
  * @param array $history Массив с данными сделанных ставок
  *
- * @return array Возвращает исходный массив, дополненный датой в человекопонятном формате
+ * @return array Исходный массив, дополненный датой в человекопонятном формате
  */
 function convertHistoryDates(array $history) {
     $detailHistory = [];
@@ -536,7 +536,7 @@ function convertHistoryDates(array $history) {
  * содержащий имя исполняемого скрипта и переданный в $_GET параметр 'page' - номер страницы
  * @param string $value Номер страницы
  *
- * @return string Возвращает корректный URL, используемый для перехода на нужную страницу
+ * @return string Корректный URL, используемый для перехода на нужную страницу
  */
 function setUrlPath($value) {
     $params = $_GET;
@@ -552,7 +552,7 @@ function setUrlPath($value) {
  *
  * @param array $lots Массив с лотами
  *
- * @return array Возвращает массив из лотов, разбитых с учетом пагинации,
+ * @return array Массив из лотов, разбитых с учетом пагинации,
  * и шаблон с номерами страниц и оформлением с уже переданными данными для отрисовки
  */
 function createPagination($lots) {

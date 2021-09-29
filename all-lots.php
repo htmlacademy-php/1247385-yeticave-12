@@ -4,7 +4,19 @@ require_once 'db.php';
 
 $templateData = [];
 
-// проверяем корректность переданного параметра
+/**
+ * Проверяет корректность переданного параметра категории -
+ * есть ли код категории, переданный в $_GET в списке категорий сайта.
+ * Если категория существует, возвращает ее значение, защищенное от SQL-инъекций,
+ * для последующего запроса в БД.
+ * Если категория не существует - возвращает код ответа 404
+ *
+ * @param string $param Код категории, переданный в $_GET
+ * @param array $categories Массив с категориями
+ * @param mysqli $connection Ресурс соединения
+ *
+ * @return string Безопасное значение кода категории для запроса в БД
+ */
 function checkRequest($param, $categories, $connection) {
     $categoriesCodes = array_column($categories, 'code');
 
@@ -17,7 +29,16 @@ function checkRequest($param, $categories, $connection) {
     return $category;
 }
 
-// получаем название категории из переданного кода
+
+/**
+ * Ищет в массиве категорий название категории в человекопонятном виде
+ * по переданному символьному коду категории
+ *
+ * @param array $categories Массив с категориями
+ * @param string $code Символьный код категории
+ *
+ * @return string Название категории в человекопонятном виде для вывода в шаблоне
+ */
 function getCategoryTitle($categories, $code) {
     foreach ($categories as $item) {
         if ($item['code'] === $code) {
@@ -28,6 +49,18 @@ function getCategoryTitle($categories, $code) {
     return $categoryTitle;
 }
 
+/**
+ * Выбирает в БД лоты, соответствующие категории, переданной в $_GET,
+ * и если находит такие лоты, возвращает массив с их данными для отрисовки в шаблоне.
+ * Если в заданной категории нет лотов, возвращает массив, содержащий сообщение об отсутствии лотов
+ *
+ * @param mysqli $connection Ресурс соединения
+ * @param array $categories Массив с категориями
+ * @param array $templateData Массив для записи результата поиска лотов
+ *
+ * @return array Массив с данными для отрисовки лотов по выбранной категории,
+ * или пустой массив с сообщением что лотов не найдено
+ */
 function searchForMatches($connection, $categories, $templateData) {
     $category = checkRequest($_GET['category'], $categories, $connection);
 
@@ -58,8 +91,13 @@ function searchForMatches($connection, $categories, $templateData) {
     return $templateData;
 }
 
-
-// задаем шаблон для отображения
+/**
+ * В зависимости от полученного кода ответа сервера определяет шаблон для отображения на странице.
+ * Если код ответа 200, показывается шаблон для отрисовки лотов,
+ * во всех остальных случаях отрисовывается шаблон для страницы 404
+ *
+ * @return string Имя шаблона для отображения на странице
+ */
 function setTemplateName() {
     if (http_response_code() === 200) {
         $templateName = '/all-lots.php';
