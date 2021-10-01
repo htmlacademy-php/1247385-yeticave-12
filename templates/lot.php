@@ -23,11 +23,13 @@
                             Мин. ставка <span><?= formatPrice($lot['minBet']); ?></span>
                         </div>
                     </div>
-                    <?php if($isVisible): ?>
-                        <form class="lot-item__form" action="lot.php?id=<?= $lot['id']; ?>" method="post" autocomplete="off">
+                    <?php if ($isVisible): ?>
+                        <form class="lot-item__form" action="lot.php?id=<?= $lot['id']; ?>" method="post"
+                              autocomplete="off">
                             <p class="lot-item__form-item <?= !empty($error) ? 'form__item--invalid' : ''; ?>">
                                 <label for="cost">Ваша ставка</label>
-                                <input id="cost" type="text" name="cost" placeholder="<?= formatPrice($lot['minBet']); ?>"
+                                <input id="cost" type="text" name="cost"
+                                       placeholder="<?= formatPrice($lot['minBet']); ?>"
                                        value="<?= $error ? getPostVal('cost') : ''; ?>">
                                 <span class="form__error"><?= $error; ?></span>
                             </p>
@@ -37,7 +39,7 @@
                 </div>
                 <div class="history">
                     <h3>История ставок (<span><?= $history ? count($history) : 0; ?></span>)</h3>
-                    <?php if($history): ?>
+                    <?php if ($history): ?>
                         <table class="history__list">
                             <?php foreach ($history as $bet): ?>
                                 <tr class="history__item">

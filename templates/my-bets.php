@@ -8,8 +8,9 @@
                         <img src="<?= $bet['url']; ?>" width="54" height="40" alt="<?= $bet['title']; ?>">
                     </div>
                     <div>
-                        <h3 class="rates__title"><a href="lot.php?id=<?= $bet['lot_id']; ?>"><?= $bet['title']; ?></a></h3>
-                        <?php if($bet['state'] === 'win'): ?>
+                        <h3 class="rates__title"><a href="lot.php?id=<?= $bet['lot_id']; ?>"><?= $bet['title']; ?></a>
+                        </h3>
+                        <?php if ($bet['state'] === 'win'): ?>
                             <p><?= $bet['contact']; ?></p>
                         <?php endif; ?>
                     </div>
@@ -21,13 +22,14 @@
                     <?php switch ($bet['state']):
                         case 'win': ?>
                             <div class="timer timer--win">Ставка выиграла</div>
-                        <?php break; ?>
+                            <?php break; ?>
                         <?php case 'end': ?>
                             <div class="timer timer--end">Торги окончены</div>
-                        <?php break; ?>
+                            <?php break; ?>
                         <?php default: ?>
-                            <div class="timer <?= $bet['isNew'] ? 'timer--finishing' : ''; ?>"><?= $bet['hours'] . ':' . $bet['minutes'] . ':' . $bet['seconds'];; ?></div>
-                    <?php endswitch; ?>
+                            <div
+                                class="timer <?= $bet['isNew'] ? 'timer--finishing' : ''; ?>"><?= $bet['hours'] . ':' . $bet['minutes'] . ':' . $bet['seconds'];; ?></div>
+                        <?php endswitch; ?>
                 </td>
                 <td class="rates__price">
                     <?= $bet['step']; ?>
