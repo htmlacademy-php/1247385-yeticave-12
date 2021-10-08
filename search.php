@@ -86,22 +86,12 @@ if ($connection) {
 // HTML-код блока main
 $pageContent = include_template('/search.php', $templateData);
 
-// HTML-код блока nav в верхней и нижней части сайта
-$navigation = include_template('/navigation.php', ['categories' => $categories]);
-
-// HTML-код блока footer
-$footerContent = include_template('/footer.php');
+// задаем переменные окружения для передачи в layout
+$environment = setEnvironment('Результаты поиска', $pageContent, $categories);
+$environment['searchText'] = $enteredSearchText;
 
 // окончательный HTML-код
-$layoutContent = include_template('/layout.php', [
-    'title' => 'Результаты поиска',
-    'navigation' => $navigation,
-    'isAuth' => $isAuth,
-    'userName' => $userName,
-    'searchText' => $enteredSearchText,
-    'content' => $pageContent,
-    'footer' => $footerContent
-]);
+$layoutContent = include_template('/layout.php', $environment);
 
 print($layoutContent);
 

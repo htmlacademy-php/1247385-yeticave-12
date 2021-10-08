@@ -14,7 +14,7 @@
                 <option value="">Выберите категорию</option>
                 <?php foreach ($categories as $category): ?>
                     <option value="<?= strip_tags($category['id']); ?>"
-                        <?php if ($category['id'] == getPostVal('category')): ?>
+                        <?php if ($category['id'] === getPostVal('category')): ?>
                             selected
                         <?php endif; ?>>
                         <?= strip_tags($category['title']); ?>

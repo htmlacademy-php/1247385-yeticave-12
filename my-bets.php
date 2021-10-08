@@ -104,24 +104,16 @@ if ($connection) {
 }
 
 // HTML-код лота
-$page_content = include_template('/my-bets.php', [
+$pageContent = include_template('/my-bets.php', [
     'history' => $historyWithWinners
 ]);
 
-// HTML-код блока nav в верхней и нижней части сайта
-$navigation = include_template('/navigation.php', ['categories' => $categories]);
 
-// HTML-код блока footer
-$footer_content = include_template('/footer.php');
+// задаем переменные окружения для передачи в layout
+$environment = setEnvironment('Мои ставки', $pageContent, $categories);
+
 
 // окончательный HTML-код
-$layout_content = include_template('/layout.php', [
-    'title' => 'Мои ставки',
-    'navigation' => $navigation,
-    'isAuth' => $isAuth,
-    'userName' => $userName,
-    'content' => $page_content,
-    'footer' => $footer_content,
-]);
+$layoutContent = include_template('/layout.php', $environment);
 
-print($layout_content);
+print($layoutContent);
