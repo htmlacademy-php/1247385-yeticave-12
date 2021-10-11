@@ -11,7 +11,7 @@ loginRequired();
  *
  * @return string|null Текст ошибок, если условия не выполнены, или null, если ошибок не было
  */
-function validateInputFields($categories)
+function validateInputFields(array $categories)
 {
     $categoriesIds = array_column($categories, 'id');
 
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = validateInputFields($categories);
 
     if (!empty($errors)) {
-        $page_content = include_template('/add.php', [
+        $pageContent = include_template('/add.php', [
             'errors' => $errors,
             'categories' => $categories
         ]);
@@ -100,27 +100,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         insertLotToDB($connection, $lot);
     }
 } else {
-    $page_content = include_template('/add.php', [
+    $pageContent = include_template('/add.php', [
         'categories' => $categories
     ]);
 }
 
-// HTML-код блока nav в верхней и нижней части сайта
-$navigation = include_template('/navigation.php', ['categories' => $categories]);
-
-// HTML-код блока footer
-$footer_content = include_template('/footer.php');
+// задаем переменные окружения для передачи в layout
+$environment = setEnvironment('Добавление лота', $pageContent, $categories, true);
+$environment['scripts'] = includeScripts();
 
 // окончательный HTML-код
-$layout_content = include_template('/layout.php', [
-    'title' => 'Добавление лота',
-    'navigation' => $navigation,
-    'isAuth' => $isAuth,
-    'userName' => $userName,
-    'content' => $page_content,
-    'footer' => $footer_content,
-    'scripts' => includeScripts(),
-    'extraCss' => $extraCss
-]);
+$layoutContent = include_template('/layout.php', $environment);
 
-print($layout_content);
+print($layoutContent);

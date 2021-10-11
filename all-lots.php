@@ -43,7 +43,7 @@ function checkRequest($param, $categories, $connection)
 function getCategoryTitle($categories, $code)
 {
     foreach ($categories as $item) {
-        if ($item['code'] === $code) {
+        if (isset($item['code']) && $item['code'] === $code) {
             $categoryTitle = $item['title'];
         }
     }
@@ -88,6 +88,7 @@ function searchForMatches($connection, $categories, $templateData)
             $templateData['gridLots'] = $gridLots;
         } else {
             $templateData['errors'] = 'Ничего не найдено по вашему запросу';
+            $templateData['pagination'] = '';
         }
     }
 
@@ -120,22 +121,12 @@ if ($connection) {
 }
 
 // HTML-код блока main
-$page_content = include_template($templateName, $templateData);
+$pageContent = include_template($templateName, $templateData);
 
-// HTML-код блока nav в верхней и нижней части сайта
-$navigation = include_template('/navigation.php', ['categories' => $categories]);
-
-// HTML-код блока footer
-$footer_content = include_template('/footer.php');
+// задаем переменные окружения для передачи в layout
+$environment = setEnvironment('Все лоты', $pageContent, $categories);
 
 // окончательный HTML-код
-$layout_content = include_template('/layout.php', [
-    'title' => 'Все лоты',
-    'navigation' => $navigation,
-    'isAuth' => $isAuth,
-    'userName' => $userName,
-    'content' => $page_content,
-    'footer' => $footer_content
-]);
+$layoutContent = include_template('/layout.php', $environment);
 
-print($layout_content);
+print($layoutContent);

@@ -205,9 +205,10 @@ function checkFormVisibility($lot, $history, $userId)
 {
     $isVisible = checkLotDateActual($lot['expiration']);
 
-    if ($userId === $lot['author_id'] || $history[0]['user_id'] === $userId) {
+    if (isset($history[0]['user_id']) && ($userId === $lot['author_id'] || $history[0]['user_id'] === $userId)) {
         $isVisible = false;
     }
+
     return $isVisible;
 }
 
@@ -247,6 +248,8 @@ if ($connection) {
 
     $lot = updateLotBets($connection, $lotFromDB);
 
+    $error = ''; // ошибки могут возникнуть только при POST
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $rate = $_POST['cost'];
 
@@ -264,22 +267,12 @@ if ($connection) {
 }
 
 // HTML-код лота
-$page_content = setTemplateData($lot, $isAuth, $error, $history, $userId);
+$pageContent = setTemplateData($lot, $isAuth, $error, $history, $userId);
 
-// HTML-код блока nav в верхней и нижней части сайта
-$navigation = include_template('/navigation.php', ['categories' => $categories]);
-
-// HTML-код блока footer
-$footer_content = include_template('/footer.php');
+// задаем переменные окружения для передачи в layout
+$environment = setEnvironment($lot['title'], $pageContent, $categories);
 
 // окончательный HTML-код
-$layout_content = include_template('/layout.php', [
-    'title' => $lot['title'],
-    'navigation' => $navigation,
-    'isAuth' => $isAuth,
-    'userName' => $userName,
-    'content' => $page_content,
-    'footer' => $footer_content,
-]);
+$layoutContent = include_template('/layout.php', $environment);
 
-print($layout_content);
+print($layoutContent);

@@ -23,13 +23,13 @@
 
             <nav class="user-menu">
                 <!-- код для показа меню и данных пользователя -->
-                <?php if ($isAuth): ?>
+                <?php if ($isAuth) : ?>
                     <div class="user-menu__logged">
-                        <p><?= $userName; ?></p>
+                        <p><?= strip_tags($userName); ?></p>
                         <a class="user-menu__bets" href="my-bets.php">Мои ставки</a>
                         <a class="user-menu__logout" href="/logout.php">Выход</a>
                     </div>
-                <?php else: ?>
+                <?php else : ?>
                     <ul class="user-menu__list">
                         <li class="user-menu__item">
                             <a href="/sign-up.php">Регистрация</a>

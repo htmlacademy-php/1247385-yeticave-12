@@ -3,8 +3,6 @@ require_once 'helpers.php';
 require_once 'db.php';
 require_once 'getwinner.php';
 
-$title = 'YetiCave - Главная';
-
 $sqlProducts = 'SELECT lots.id as id, lots.title as title, `start_price` as price, `image` as url, categories.title as category, `date_exp` as expiration FROM lots '
     . 'JOIN `categories` ON categories.id = `category_id` '
     . 'WHERE `date_exp` > NOW() '
@@ -17,28 +15,18 @@ $gridLots = include_template('/grid-lots.php', [
 ]);
 
 // HTML-код блока main
-$page_content = include_template('/main.php', [
+$pageContent = include_template('/main.php', [
     'categories' => $categories,
     'gridLots' => $gridLots
 ]);
 
-// HTML-код блока nav в верхней и нижней части сайта
-$navigation = include_template('/navigation.php', ['categories' => $categories]);
-
-// HTML-код блока footer
-$footer_content = include_template('/footer.php');
+// задаем переменные окружения для передачи в layout
+$environment = setEnvironment('YetiCave - Главная', $pageContent, $categories);
+$environment['homePage'] = true;
+$environment['addContainer'] = true;
+$environment['scripts'] = includeScripts();
 
 // окончательный HTML-код
-$layout_content = include_template('/layout.php', [
-    'title' => $title,
-    'navigation' => $navigation,
-    'isAuth' => $isAuth,
-    'userName' => $userName,
-    'content' => $page_content,
-    'footer' => $footer_content,
-    'scripts' => includeScripts(),
-    'homePage' => true,
-    'addContainer' => true
-]);
+$layoutContent = include_template('/layout.php', $environment);
 
-print($layout_content);
+print($layoutContent);
