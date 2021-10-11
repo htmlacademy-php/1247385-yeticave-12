@@ -11,7 +11,7 @@ loginRequired();
  *
  * @return string|null Текст ошибок, если условия не выполнены, или null, если ошибок не было
  */
-function validateInputFields($categories)
+function validateInputFields(array $categories)
 {
     $categoriesIds = array_column($categories, 'id');
 

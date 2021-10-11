@@ -4,8 +4,8 @@
         снаряжение.</p>
     <ul class="promo__list">
         <!--список из массива категорий-->
-        <?php foreach ($categories as $category): ?>
-            <li class="promo__item promo__item--<?= $category['code'] ?>">
+        <?php foreach ($categories as $category) : ?>
+            <li class="promo__item promo__item--<?= strip_tags($category['code']); ?>">
                 <a class="promo__link" href="all-lots.php?category=<?= strip_tags($category['code']); ?>">
                     <?= strip_tags($category['title']); ?>
                 </a>

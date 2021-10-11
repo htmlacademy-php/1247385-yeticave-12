@@ -48,7 +48,8 @@ function getDataFromDB($connection, $sql)
  *
  * @return array $userId и $userName авторизованного пользователя, флаг авторизации $isAuth
  */
-function checkAuthUser() {
+function checkAuthUser()
+{
     // проверяем, открыта ли сессия
     if (!empty($_SESSION['user'])) {
         $isAuth = true;
@@ -63,6 +64,7 @@ function checkAuthUser() {
     return [$isAuth, $userName, $userId];
 }
 
+
 /**
  * Используется для задания переменных среды и последующего отображения в шаблонах
  * @param string $title Заголовок страницы
@@ -73,7 +75,8 @@ function checkAuthUser() {
  *
  * @return array Массив с данными для передачи в шаблон
  */
-function setEnvironment($title, $content, $categories, $isExtraCss = false) {
+function setEnvironment($title, $content, $categories, $isExtraCss = false)
+{
     // проверяем, если ли авторизованный пользователь
     list($isAuth, $userName, $userId) = checkAuthUser();
 
