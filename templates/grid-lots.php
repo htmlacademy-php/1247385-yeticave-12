@@ -1,6 +1,6 @@
 <ul class="lots__list">
     <!--список из массива с товарами-->
-    <?php foreach ($products as $product): ?>
+    <?php foreach ($products as $product) : ?>
         <li class="lots__item lot">
             <div class="lot__image">
                 <img src="<?= strip_tags($product['url']); ?>" width="350" height="260"

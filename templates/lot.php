@@ -12,9 +12,15 @@
         <div class="lot-item__right">
             <?php if ($isAuth) : ?>
                 <div class="lot-item__state">
+                    <?php if (isset($lot['isClosed']) && !$lot['isClosed']) : ?>
                     <div class="lot-item__timer timer <?= $lot['isNew'] ? 'timer--finishing' : '' ?>">
                         <?= $lot['hours'] . ':' . $lot['minutes'] ?>
                     </div>
+                    <?php else : ?>
+                    <div class="lot-item__timer timer">
+                        закрыт
+                    </div>
+                    <?php endif; ?>
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>

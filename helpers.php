@@ -48,14 +48,10 @@ function db_get_prepare_stmt($link, $sql, $data = [])
 
             if (is_int($value)) {
                 $type = 'i';
-            } else {
-                if (is_string($value)) {
-                    $type = 's';
-                } else {
-                    if (is_double($value)) {
-                        $type = 'd';
-                    }
-                }
+            } else if (is_string($value)) {
+                $type = 's';
+            } else if (is_double($value)) {
+                $type = 'd';
             }
 
             if ($type) {
@@ -233,7 +229,8 @@ function createDetailProducts(array $products)
         $product['hours'] = $hours;
         $product['minutes'] = $minutes;
         $product['seconds'] = $seconds;
-        $product['isNew'] = $hours < 1;
+        $product['isNew'] = $hours >= 0 && $hours < 1;
+        $product['isClosed'] = $hours < 0;
 
         $detailProducts[] = $product;
     }
@@ -378,11 +375,17 @@ function validatePrice($value)
  */
 function validatePriceStep($value, $minRange = 1)
 {
-    $options = ['options' => ['min_range' => $minRange]];
+    $options = ['options' => [
+        'min_range' => $minRange,
+        // ограничиваем верхнюю границу диапазона целого числа INT в MySQL
+        'max_range' => 2147483647
+    ]];
     $step = filter_var($value, FILTER_VALIDATE_INT, $options);
 
+    $maxRange = formatPrice($options['options']['max_range']);
+
     if (!$step) {
-        return "Введите целое число больше или равно $minRange";
+        return "Введите целое число в диапазоне от " . formatPrice($minRange) . " до $maxRange";
     }
 
     return null;
@@ -522,7 +525,6 @@ function convertHistoryDates(array $history)
     $detailHistory = [];
 
     foreach ($history as $unit) {
-
         $currentDate = strtotime('now');
         $expiryDate = strtotime($unit['date_created']);
 
@@ -533,14 +535,25 @@ function convertHistoryDates(array $history)
 
         switch ($hours) {
             case ($hours < 0):
-                $unit['detailDate'] = $minutes . ' ' . get_noun_plural_form($minutes,
-                        'минута', 'минуты', 'минут') . ' назад';
+                $unit['detailDate'] = $minutes . ' ' . get_noun_plural_form(
+                    $minutes,
+                    'минута',
+                    'минуты',
+                    'минут'
+                ) . ' назад';
                 break;
             case ($hours >= 1 && $hours < 24):
-                $unit['detailDate'] = $hours . ' ' . get_noun_plural_form($hours,
-                        'час', 'часа', 'часов') . ' '
-                    . $minutes . ' ' . get_noun_plural_form($minutes,
-                        'минута', 'минуты', 'минут') . ' назад';
+                $unit['detailDate'] = $hours . ' ' . get_noun_plural_form(
+                    $hours,
+                    'час',
+                    'часа',
+                    'часов'
+                ) . ' '  . $minutes . ' ' . get_noun_plural_form(
+                    $minutes,
+                    'минута',
+                    'минуты',
+                    'минут'
+                ) . ' назад';
                 break;
             case ($hours >= 24 && $hours < 48):
                 $unit['detailDate'] = date_format(date_create($unit['date_created']), 'вчера в H:i');

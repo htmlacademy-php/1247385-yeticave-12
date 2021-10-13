@@ -1,4 +1,7 @@
 <?php
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 require_once 'db.php';
 require_once 'helpers.php';
 require_once 'vendor/autoload.php';
@@ -38,7 +41,8 @@ function sendEmailToWinner($winner)
     $mailer = new Swift_Mailer($transport);
 
     // передадим путь сайта в шаблон письма
-    $serverPath = $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["SERVER_NAME"];
+    $serverPath = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER["SERVER_NAME"];
+    var_dump($serverPath);
 
     // Message's body
     $content = include_template('/email.php', [
@@ -91,7 +95,6 @@ function determineTheWinner($connection)
                 $winnerLot = intval($winner['lot_id']);
 
                 sendEmailToWinner($winner);
-
             } else {
                 // если на лот ставок не было, задаем winner_id=0 чтобы не искать его больше
                 $winnerId = 0;

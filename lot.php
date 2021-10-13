@@ -15,6 +15,7 @@ function getIdFromRequest($param)
     if (isset($param)) {
         $id = intval($param);
     } else {
+        $id = 0;
         http_response_code(404);
     }
     return $id;
@@ -49,25 +50,28 @@ function validateUserRate($value, $minPrice)
  */
 function getLotFromDb($connection)
 {
-    $sqlSelectLot = 'SELECT lots.id as id, lots.title as title, lots.description as description,
+    if (isset($_GET['id'])) {
+        $sqlSelectLot = 'SELECT lots.id as id, lots.title as title, lots.description as description,
        `start_price` as price, `image` as url, `date_exp` as expiration,
        `step_price` as step, `author_id`, categories.title as category FROM lots '
-        . 'JOIN `categories` ON categories.id = `category_id` '
-        . 'WHERE lots.id=' . getIdFromRequest($_GET['id']);
+            . 'JOIN `categories` ON categories.id = `category_id` '
+            . 'WHERE lots.id=' . getIdFromRequest($_GET['id']);
 
-    $result = mysqli_query($connection, $sqlSelectLot);
+        $result = mysqli_query($connection, $sqlSelectLot);
 
-    if ($result && mysqli_num_rows($result) !== 0) {
-        $lots = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        $lotDetails = createDetailProducts($lots);
+        if ($result && mysqli_num_rows($result) !== 0) {
+            $lots = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            $lotDetails = createDetailProducts($lots);
 
-        // берем первый и единственный элемент массива с лотами
-        $currentLot = $lotDetails[0];
-    } else {
-        http_response_code(404);
+            // берем первый и единственный элемент массива с лотами
+            $currentLot = $lotDetails[0];
+        } else {
+            http_response_code(404);
+            $currentLot = [];
+        }
+
+        return $currentLot;
     }
-
-    return $currentLot;
 }
 
 /**
@@ -80,17 +84,19 @@ function getLotFromDb($connection)
  */
 function getMaxBet($connection, $lot)
 {
-    $id = $lot['id'];
+    if (isset($lot['id'])) {
+        $id = $lot['id'];
 
-    $sql = 'SELECT MAX(`price`) as max_bet FROM bets '
-        . 'WHERE `lot_id`=' . $id;
-    $result = mysqli_query($connection, $sql);
+        $sql = 'SELECT MAX(`price`) as max_bet FROM bets '
+            . 'WHERE `lot_id`=' . $id;
+        $result = mysqli_query($connection, $sql);
 
-    if ($result && mysqli_num_rows($result) !== 0) {
-        $maxBet = mysqli_fetch_assoc($result);
+        if ($result && mysqli_num_rows($result) !== 0) {
+            $maxBet = mysqli_fetch_assoc($result);
+        }
+
+        return $maxBet['max_bet'];
     }
-
-    return $maxBet['max_bet'];
 }
 
 /**
@@ -121,17 +127,19 @@ function calculateMinBet($currentLot)
  */
 function updateLotBets($connection, $lot)
 {
-    $maxBet = getMaxBet($connection, $lot);
+    if (!empty($lot)) {
+        $maxBet = getMaxBet($connection, $lot);
 
-    if (!empty($maxBet)) {
-        $lot['currentPrice'] = $maxBet;
-    } else {
-        $lot['currentPrice'] = $lot['price'];
+        if (!empty($maxBet)) {
+            $lot['currentPrice'] = $maxBet;
+        } else {
+            $lot['currentPrice'] = $lot['price'];
+        }
+
+        $lot = calculateMinBet($lot);
+
+        return $lot;
     }
-
-    $lot = calculateMinBet($lot);
-
-    return $lot;
 }
 
 /**
@@ -170,23 +178,25 @@ function insertBetToDb($rate, $userId, $lot, $connection)
  */
 function getBetsHistory($connection, $lot)
 {
-    $sql = 'SELECT bets.date_created, `price`, bets.user_id, bets.lot_id, users.name FROM bets '
-        . 'JOIN `users` ON users.id = `user_id` '
-        . 'WHERE bets.lot_id=' . $lot['id']
-        . ' ORDER BY bets.date_created DESC ';
+    if (!empty($lot)) {
+        $sql = 'SELECT bets.date_created, `price`, bets.user_id, bets.lot_id, users.name FROM bets '
+            . 'JOIN `users` ON users.id = `user_id` '
+            . 'WHERE bets.lot_id=' . $lot['id']
+            . ' ORDER BY bets.date_created DESC ';
 
-    $result = mysqli_query($connection, $sql);
+        $result = mysqli_query($connection, $sql);
 
-    if ($result && mysqli_num_rows($result) !== 0) {
-        $history = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        if ($result && mysqli_num_rows($result) !== 0) {
+            $history = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-        // выводим дату ставки в человекопонятном формате
-        $history = convertHistoryDates($history);
-    } else {
-        $history = [];
+            // выводим дату ставки в человекопонятном формате
+            $history = convertHistoryDates($history);
+        } else {
+            $history = [];
+        }
+
+        return $history;
     }
-
-    return $history;
 }
 
 /**
@@ -227,7 +237,7 @@ function checkFormVisibility($lot, $history, $userId)
  */
 function setTemplateData($lot, $isAuth, $error, $history, $userId)
 {
-    if (http_response_code() === 200) {
+    if (http_response_code() === 200 && !empty($lot)) {
         $content = include_template('/lot.php', [
             'lot' => $lot,
             'currentPrice' => formatPrice($lot['currentPrice']),
@@ -261,7 +271,6 @@ if ($connection) {
         }
     }
     $history = getBetsHistory($connection, $lot);
-
 } else {
     showConnectionError();
 }
@@ -270,7 +279,8 @@ if ($connection) {
 $pageContent = setTemplateData($lot, $isAuth, $error, $history, $userId);
 
 // задаем переменные окружения для передачи в layout
-$environment = setEnvironment($lot['title'], $pageContent, $categories);
+$title = isset($lot['title']) ? $lot['title'] : 'Страница не найдена';
+$environment = setEnvironment($title, $pageContent, $categories);
 
 // окончательный HTML-код
 $layoutContent = include_template('/layout.php', $environment);
