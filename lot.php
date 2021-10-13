@@ -215,7 +215,7 @@ function checkFormVisibility($lot, $history, $userId)
 {
     $isVisible = checkLotDateActual($lot['expiration']);
 
-    if (isset($history[0]['user_id']) && ($userId === $lot['author_id'] || $history[0]['user_id'] === $userId)) {
+    if (isset($history[0]['user_id']) || ($userId === $lot['author_id'] || $history[0]['user_id'] === $userId)) {
         $isVisible = false;
     }
 
