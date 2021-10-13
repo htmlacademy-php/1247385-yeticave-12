@@ -24,17 +24,23 @@
                 </td>
                 <td class="rates__timer">
                 <?php switch ($bet['state']) :
-                    case 'win': ?>
+                    case 'win':
+                        ?>
                         <div class="timer timer--win">Ставка выиграла</div>
-                    <?php break; ?>
-                    <?php case 'end': ?>
+                        <?php
+                        break; ?>
+                    <?php case 'end':
+                        ?>
                         <div class="timer timer--end">Торги окончены</div>
-                    <?php break; ?>
-                    <?php default: ?>
+                        <?php
+                              break; ?>
+                    <?php default:
+                        ?>
                         <div class="timer <?= $bet['isNew'] ? 'timer--finishing' : ''; ?>">
                             <?= $bet['hours'] . ':' . $bet['minutes'] . ':' . $bet['seconds']; ?>
                         </div>
-                    <?php break; ?>
+                        <?php
+                              break; ?>
                 <?php endswitch; ?>
                 </td>
                 <td class="rates__price">

@@ -38,7 +38,8 @@ function sendEmailToWinner($winner)
     $mailer = new Swift_Mailer($transport);
 
     // передадим путь сайта в шаблон письма
-    $serverPath = $_SERVER["REQUEST_SCHEME"] . '://' . $_SERVER["SERVER_NAME"];
+    $serverPath = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER["SERVER_NAME"];
+    var_dump($serverPath);
 
     // Message's body
     $content = include_template('/email.php', [
@@ -91,7 +92,6 @@ function determineTheWinner($connection)
                 $winnerLot = intval($winner['lot_id']);
 
                 sendEmailToWinner($winner);
-
             } else {
                 // если на лот ставок не было, задаем winner_id=0 чтобы не искать его больше
                 $winnerId = 0;

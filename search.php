@@ -94,4 +94,3 @@ $environment['searchText'] = $enteredSearchText;
 $layoutContent = include_template('/layout.php', $environment);
 
 print($layoutContent);
-
