@@ -39,7 +39,6 @@ function sendEmailToWinner($winner)
 
     // передадим путь сайта в шаблон письма
     $serverPath = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER["SERVER_NAME"];
-    var_dump($serverPath);
 
     // Message's body
     $content = include_template('/email.php', [
